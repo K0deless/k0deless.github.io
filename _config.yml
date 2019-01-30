@@ -1,1 +1,28 @@
-theme: jekyll-theme-tactile
+# Site specific settings
+title: "TheDoom"
+name: "Fare9's TheDoom"
+keywords: "reversing, malware, C, C++, ASM"
+baseurl: "/darcli"
+url: "https://fare9.github.io/TheDoom/"
+description: "Web page where you will find my malware analysis, reference to my programs, and so on."
+cover: "/assets/img/cover.svg"
+fanpage_id: ""
+
+# Site general settings
+lang: "en"
+lang_alternate: "jp"
+ssl: true # It will redirect to https
+
+# Media
+# Just the shortname:
+# facebook: lampiaosec # Rigth
+# facebook: facebook.com/lampiaosec # Wrong
+disqus: 
+twitter: Farenain 
+facebook: 
+github: Fare9
+google:
+
+# Build settings
+markdown: kramdown
+permalink: /:categories/:title/
