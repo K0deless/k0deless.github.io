@@ -61,6 +61,8 @@ I hope you like it.
 
 {% if post.en %}
 <li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a> :: <a href="{{ post.pt }}" title="{{ post.description_pt }}">pt_br</a></li>
+{% else %}
+<li>No... Nothing for the moment...</li>
 {% endif %}
 
 {% endfor %}
@@ -72,8 +74,10 @@ I hope you like it.
 <ul>
 {% for post in site.categories.articles %}
 
-{% if post.en %}
+{% if post %}
 <li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a> :: <a href="{{ post.pt }}" title="{{ post.description_pt }}">pt_br</a></li>
+{% else %}
+<li>No... Nothing for the moment...</li>
 {% endif %}
 
 {% endfor %}
