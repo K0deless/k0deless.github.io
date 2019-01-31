@@ -58,8 +58,12 @@ I hope you like it.
 
 <ul>
 
-{% if site.categories.posts == null %}
+{% if site.categories.posts == "" %}
+
+
 No... Not for the moment...
+
+
 {% else %}
 {% for post in site.categories.posts %}
 
@@ -75,7 +79,7 @@ No... Not for the moment...
 
 <ul>
 
-{% if site.categories.articles == null %}
+{% if site.categories.articles == "" %}
 
 No... Not for the moment...
 
