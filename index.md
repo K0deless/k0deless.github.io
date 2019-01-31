@@ -21,16 +21,28 @@ I hope you like it.
 <li>{{ member.mail }}</li>
 <li><a href="https://github.com/{{ member.github }}">https://github.com/{{ member.github }}</a></li>
 <li><a href="{{ member.site }}">{{ member.site }}</a></li>
+{% if member.twitter %}
+<li><a href="https://twitter.com/{{ member.twitter }}">https://twitter.com/{{ member.twitter }}</a></li>
+{% endif %}
 </ul>
 </li>
 {% endfor %}
 </ul>
 
-# $ cat projects_and_analysis.txt
+# $ cat projects.txt
 {:id="projects"}
 
 <ul>
 {% for project in site.categories.projects %}
+<li><a href="{{ project.link }}">{{ project.title }}</a> - {{ project.description }}</li>
+{% endfor %}
+</ul>
+
+# $ cat malware_analysis.txt
+{:id="analysis"}
+
+<ul>
+{% for project in site.categories.analysis %}
 <li><a href="{{ project.link }}">{{ project.title }}</a> - {{ project.description }}</li>
 {% endfor %}
 </ul>
