@@ -57,7 +57,6 @@ I hope you like it.
 {:id="posts"}
 
 <ul>
-{{ site.categories.posts }}
 {% for post in site.categories.posts %}
 
 {% if post. %}
