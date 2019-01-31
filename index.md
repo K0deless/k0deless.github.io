@@ -26,7 +26,7 @@ I hope you like it.
 {% endfor %}
 </ul>
 
-# $ cat projects.txt
+# $ cat projects_and_analysis.txt
 {:id="projects"}
 
 <ul>
