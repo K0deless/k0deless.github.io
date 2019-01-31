@@ -58,20 +58,12 @@ I hope you like it.
 
 <ul>
 
-{% if site.categories.posts == "" %}
-
-
-No... Not for the moment...
-
-
-{% else %}
 {% for post in site.categories.posts %}
 
 {% if post. %}
 <li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a> :: <a href="{{ post.pt }}" title="{{ post.description_pt }}">pt_br</a></li>
 
 {% endfor %}
-{% endif %}
 </ul>
 
 # $ cat articles.txt
@@ -79,17 +71,10 @@ No... Not for the moment...
 
 <ul>
 
-debug: {{ site.categories.articles }}
-{% if site.categories.articles == "" %}
-
-No... Not for the moment...
-
-{% else %}
 {% for post in site.categories.articles %}
 
 {% if post %}
 <li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a> :: <a href="{{ post.pt }}" title="{{ post.description_pt }}">pt_br</a></li>
 
 {% endfor %}
-{% endif %}
 </ul>
