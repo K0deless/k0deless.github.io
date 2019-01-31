@@ -57,7 +57,9 @@ I hope you like it.
 {:id="posts"}
 
 <ul>
-{% if site.categories.posts %}
+{% if site.categories.posts == null %}
+No... Not for the moment...
+{% endif %}
 {% for post in site.categories.posts %}
 
 {% if post. %}
@@ -65,16 +67,15 @@ I hope you like it.
 {% endif %}
 
 {% endfor %}
-{% else %}
-No... Not for the moment...
-{% endif %}
 </ul>
 
 # $ cat articles.txt
 {:id="articles"}
 
 <ul>
-{% if site.categories.articles %}
+{% if site.categories.articles == null %}
+No... Not for the moment...
+{% endif %}
 {% for post in site.categories.articles %}
 
 {% if post %}
@@ -82,7 +83,4 @@ No... Not for the moment...
 {% endif %}
 
 {% endfor %}
-{% else %}
-No... Not for the moment...
-{% endif %}
 </ul>
