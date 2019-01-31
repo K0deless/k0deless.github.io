@@ -5,14 +5,11 @@ layout: default
 # $ cat about.txt
 {:id="about"}
 
-This is a theme intended to use to [lampiaosec](https://lampiaosec.github.io). So, it's our taste, but because we like free culture, it's free to.
+Reverse Engineer, Malware Analyst and sometimes low level programmer (C, C++, ASM, Python)...
 
-The categories to post was to support us, but you can change as you need.
+On this webpage I will upload some of my analysis, research papers or I will reference my tools.
 
-# $ cat contact.txt
-{:id="contact"}
-
-I think that all about this theme is intuitive, but if you want help, please, contact me: [gjuniioor](https://github.com/gjuniioor).
+I hope you like it.
 
 # $ cat team.txt
 {:id="team"}
