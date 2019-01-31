@@ -79,6 +79,7 @@ No... Not for the moment...
 
 <ul>
 
+debug: {{ site.categories.articles }}
 {% if site.categories.articles == "" %}
 
 No... Not for the moment...
