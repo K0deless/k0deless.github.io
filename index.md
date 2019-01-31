@@ -57,23 +57,32 @@ I hope you like it.
 {:id="posts"}
 
 <ul>
+{% if site.categories.posts %}
 {% for post in site.categories.posts %}
 
 {% if post. %}
 <li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a> :: <a href="{{ post.pt }}" title="{{ post.description_pt }}">pt_br</a></li>
+{% endif %}
 
 {% endfor %}
+{% else %}
+No... Not for the moment...
+{% endif %}
 </ul>
 
 # $ cat articles.txt
 {:id="articles"}
 
 <ul>
-
+{% if site.categories.articles %}
 {% for post in site.categories.articles %}
 
 {% if post %}
 <li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a> :: <a href="{{ post.pt }}" title="{{ post.description_pt }}">pt_br</a></li>
+{% endif %}
 
 {% endfor %}
+{% else %}
+No... Not for the moment...
+{% endif %}
 </ul>
