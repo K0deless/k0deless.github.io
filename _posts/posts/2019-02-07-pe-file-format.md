@@ -359,8 +359,7 @@ Usually when people talk about the PE header just talk about the structures and 
 * **RVA to Offset**: to calculate this, we have to go through the sections to know in which section is the RVA, for that we can do something like this:
 
 ~~~
-PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew +
-sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
+PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
 
 for (index = 0; index < numberOfSections; index++)
 {
@@ -372,13 +371,11 @@ for (index = 0; index < numberOfSections; index++)
 * **Offset to RVA**: as before, we have to know inside of which section is the offset, so to calculate that we can apply this:
 
 ~~~
-PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew +
-sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
+PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
 
 for (index = 0; index < numberOfSections; index++)
 {
-  if (offset >= section[i].PointerToRawData && offset < (section[i].PointerToRawData + section[
-    i].SizeOfRawData))
+  if (offset >= section[i].PointerToRawData && offset < (section[i].PointerToRawData + section[i].SizeOfRawData))
     return offset - section[i].PointerToRawData + section[i].VirtualAddress;
 }
 ~~~
