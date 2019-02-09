@@ -426,8 +426,14 @@ If we use the constant to check if it is ordinal or not (0x80000000 in 32 bit, a
 The loader will use a function such as *GetProcAddress* to get using the DLL handler and the name or the ordinal, the address to the DLL function. Once it has the address, it will replace in the original first thunk the RVA or the ordinal by the function address.
 
 ## References
-<a href="https://github.com/deptofdefense/SalSA/wiki/PE-File-Format">SalSA PE File Format</a>
-<a href="https://blog.kowalczyk.info/articles/pefileformat.html">kowalczyk PE File Format</a>
-<a href="https://github.com/tpn/pdfs/blob/master/Peering%20Inside%20the%20PE%20-%20A%20Tour%20of%20the%20Win32%20Portable%20Executable%20File%20Format.pdf">Peering Inside the PE</a>
-<a href="https://docs.microsoft.com/en-us/windows/desktop/debug/pe-format">Microsoft docs PE File Format</a>
-<a href="https://raw.githubusercontent.com/Alexpux/mingw-w64/master/mingw-w64-tools/widl/include/winnt.h">winnt.h</a>
+[SalSA PE File Format]
+[kowalczyk PE File Format]
+[Peering Inside the PE]
+[Microsoft docs PE File Format]
+[winnt.h]
+
+[SalSA PE File Format]: https://github.com/deptofdefense/SalSA/wiki/PE-File-Format
+[kowalczyk PE File Format]: https://blog.kowalczyk.info/articles/pefileformat.html
+[Peering Inside the PE]: https://github.com/tpn/pdfs/blob/master/Peering%20Inside%20the%20PE%20-%20A%20Tour%20of%20the%20Win32%20Portable%20Executable%20File%20Format.pdf
+[Microsoft docs PE File Format]: https://docs.microsoft.com/en-us/windows/desktop/debug/pe-format
+[winnt.h]: https://raw.githubusercontent.com/Alexpux/mingw-w64/master/mingw-w64-tools/widl/include/winnt.h
