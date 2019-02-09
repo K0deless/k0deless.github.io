@@ -2,7 +2,7 @@
 title: "TheDoom"
 name: "Fare9's TheDoom"
 keywords: "reversing, malware, C, C++, ASM"
-baseurl: "/TheDoom"
+baseurl: "/"
 url: "https://fare9.github.io/TheDoom/"
 description: "Web page where you will find my malware analysis, reference to my programs, and so on."
 cover: "/assets/img/cover.svg"
@@ -25,4 +25,4 @@ google:
 
 # Build settings
 markdown: kramdown
-permalink: /:categories/:title/
+permalink: TheDoom/:categories/:title/
