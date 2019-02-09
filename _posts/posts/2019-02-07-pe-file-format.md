@@ -413,7 +413,9 @@ Let's going to imagine that the field *name* has the next value:
 > name = 0x3020
 When the loader loads the binary for example in the address *0x00400000*, if we go to the address *0x00403020* we will see a DLL name string, for example *kernel32.dll*, in this way, the loader can use a function as *LoadLibraryA* to load the DLL and get the address.
 Once we have a handler for the DLL, the loader goes to the original first thunk, this original first thunk it is another RVA, for example:
+
 > OriginalFirstThunk = 0x5780
+
 The loader will take this DWORD and the image base, and it will have the address *0x00405780* here we will have an array of DWORDs, that as we said can be a RVA of a function name, or an ordinal of the function, let's imagine this four DWORDs
 ~~~
 0x00007030  0x80000100 0x00007040 0x00000000
