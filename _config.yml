@@ -25,4 +25,4 @@ google:
 
 # Build settings
 markdown: kramdown
-permalink: TheDoom/:categories/:title/
+permalink: /TheDoom/:categories/:title/
