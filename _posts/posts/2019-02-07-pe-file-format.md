@@ -359,7 +359,8 @@ Usually when people talk about the PE header just talk about the structures and 
 * **RVA to Offset**: to calculate this, we have to go through the sections to know in which section is the RVA, for that we can do something like this:
 
 ~~~
-PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
+PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew 
++ sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
 
 for (index = 0; index < numberOfSections; index++)
 {
