@@ -410,7 +410,9 @@ typedef struct _IMAGE_IMPORT_DESCRIPTOR {
 We will have many of these structures finished in one with values to zero, all this array of structures corresponds to the import table.
 
 Let's going to imagine that the field *name* has the next value:
+
 > name = 0x3020
+
 When the loader loads the binary for example in the address *0x00400000*, if we go to the address *0x00403020* we will see a DLL name string, for example *kernel32.dll*, in this way, the loader can use a function as *LoadLibraryA* to load the DLL and get the address.
 Once we have a handler for the DLL, the loader goes to the original first thunk, this original first thunk it is another RVA, for example:
 
