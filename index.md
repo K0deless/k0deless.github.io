@@ -75,7 +75,7 @@ No... Not for the moment...
 {% for post in site.categories.posts %}
 
 {% if post. %}
-<li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a> :: <a href="{{ post.pt }}" title="{{ post.description_pt }}">pt_br</a></li>
+<li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a></li>
 {% endif %}
 
 {% endfor %}
