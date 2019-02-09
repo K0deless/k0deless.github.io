@@ -372,7 +372,8 @@ for (index = 0; index < numberOfSections; index++)
 * **Offset to RVA**: as before, we have to know inside of which section is the offset, so to calculate that we can apply this:
 
 ~~~
-PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew + sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
+PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew 
++ sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
 
 for (index = 0; index < numberOfSections; index++)
 {
