@@ -457,3 +457,5 @@ As we can see, here we have many hardcoded offsets that once we are alerted are 
 <p><a href="https://github.com/tpn/pdfs/blob/master/Peering%20Inside%20the%20PE%20-%20A%20Tour%20of%20the%20Win32%20Portable%20Executable%20File%20Format.pdf">Peering Inside the PE</a></p>
 <p><a href="https://docs.microsoft.com/en-us/windows/desktop/debug/pe-format">Microsoft docs PE File Format</a></p>
 <p><a href="https://raw.githubusercontent.com/Alexpux/mingw-w64/master/mingw-w64-tools/widl/include/winnt.h">winnt.h</a></p>
+<p><a href="http://www.openrce.org/reference_library/files/reference/PE%20Format.pdf">Cool PDF with all the PE structures</a></p>
+<p><a href="https://github.com/erocarrera/pefile">Ero Carrera's pe file parser</a></p>
