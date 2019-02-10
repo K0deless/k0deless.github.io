@@ -459,3 +459,5 @@ As we can see, here we have many hardcoded offsets that once we are alerted are 
 <p><a href="https://raw.githubusercontent.com/Alexpux/mingw-w64/master/mingw-w64-tools/widl/include/winnt.h">winnt.h</a></p>
 <p><a href="http://www.openrce.org/reference_library/files/reference/PE%20Format.pdf">Cool PDF with all the PE structures</a></p>
 <p><a href="https://github.com/erocarrera/pefile">Ero Carrera's pe file parser</a></p>
+<p><a href="https://www.aldeid.com/wiki/LordPE"> LordPE pe file parser and editor</a></p>
+<p><a href="http://wjradburn.com/software/">PEView pe file parser with a great GUI to see the headers</a></p>
