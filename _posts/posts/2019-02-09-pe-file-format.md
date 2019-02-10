@@ -14,7 +14,7 @@ authors:
 # PE File Format
 
 Usually when I give a talk or I give a class about reversing or malware analysis, after give an introduction to the x86 architecture (sorry I don't do ARM) and to the operating systems, I talk about the executable file formats. Once I read (I don't remember where) that the format of the executables use to define the operating system where these are run.
-On this post we are going to see the parts of this PE header, as these are structures used by the operating system to load the binary en memory, get the imports that the binary will use, and finally give the control flow to the binary for the execution. Also here we will find metadata from the binary inside of some fields from the structure.
+On this post we are going to see the parts of this PE header, as these are structures used by the operating system to load the binary in memory, get the imports that the binary will use, and finally give the control flow to the binary for the execution. Also here we will find metadata from the binary inside of some fields from the structure.
 
 Let's start
 
@@ -112,7 +112,7 @@ typedef struct _IMAGE_NT_HEADERS64 {
 } IMAGE_NT_HEADERS64, *PIMAGE_NT_HEADERS64;
 ~~~
 
-As we can see the difference for this two structures comes in the optional header, as one will have some fields the other not. The coff header is implemnted on the IMAGE_FILE_HEADER, so let's going to look this structure:
+As we can see the difference for this two structures comes in the optional header, as one will have some fields the other not. The coff header is implemented on the IMAGE_FILE_HEADER, so let's going to look this structure:
 
 ~~~
 typedef struct _IMAGE_FILE_HEADER {
@@ -216,7 +216,7 @@ We are not going to say what is each field, but we will talk about some of them 
 
 * **magic**: identifies the state of the image file, this will be used to determine if an image is a PE32 (0x10b, 32 bits) binary or a PE32+ (0x20b, 64 bits) binary.
 
-* **AddressOfEntryPoint**: RVA of the first instruction of the binary that will be executed, this is optional for DLLs as this libraries export functions to execute.
+* **AddressOfEntryPoint**: RVA of the first instruction of the binary that will be executed, this is optional for DLLs as these libraries export functions to execute.
 
 * **ImageBase**: virtual memory address where the binary will be loaded, this value can be 4 or 8 bytes, depending of binary's bit architecture. The loader can follow or not this value to load the binary.
 
@@ -424,6 +424,32 @@ The loader will take this DWORD and the image base, and it will have the address
 
 If we use the constant to check if it is ordinal or not (0x80000000 in 32 bit, and 0x8000000000000000 in 64 bits), we can see the first one it is not an ordinal, so it is a RVA to a function name, in the address *0x00407030* we can have for example the function *CreateFileA* finished with a character 0, then we have one that match with our constant, so it is the ordinal 0x100, we could use *Dependency Walker* to see that ordinal, after that we have another RVA to name, so in the address *0x00407040* we can have for example the string *CreateProcessA* finished again in 0. To finish this array we have one with zeroes. 
 The loader will use a function such as *GetProcAddress* to get using the DLL handler and the name or the ordinal, the address to the DLL function. Once it has the address, it will replace in the original first thunk the RVA or the ordinal by the function address.
+
+## Great notes about old experts
+
+After releasing this post, and send to some friends, one of them who is maybe the most expert I know about File infectors told me to include this code, that maybe we can find on malware samples.
+Usually you can find codes like this one:
+~~~
+mov     edi, dword ptr [ebp + BaseDLL]  
+mov     eax, dword ptr [edi + 03Ch]     ; field e_lfanew of DOS_HEADER   
+add     eax, edi                        ; point to PE Header        
+mov     dword ptr [ebp + PEHeader], eax 
+
+mov     edi, dword ptr [ebp + PEHeader]  
+mov     eax, dword ptr [edi + 078h]     ; PE Header + 78h = RVA of export table
+add     eax, dword ptr [ebp + BaseDLL]  ; eax = export table
+
+mov edx, dword ptr [eax+020h]           ; Get RVA AddressOfNames
+add edx, dword ptr [ebp + BaseDLL]
+mov ebx, dword ptr [eax+24h]            ; Get RVA AddressOfNameOrdinals
+add ebx, dword ptr [ebp + BaseDLL]
+mov ecx, dword ptr [eax+01Ch]           ; Get RVA AddressOfFunctions
+add ecx, dword ptr [ebp + BaseDLL]
+~~~
+
+As we can see, here we have many hardcoded offsets that once we are alerted are very easy to recognize. Before we explained about the Export Table and some of its fields, here we see three of its fields by their offsets, this is used to get address of functions without importing them by the IAT.
+
+
 
 ## References
 <p><a href="https://github.com/deptofdefense/SalSA/wiki/PE-File-Format">SalSA PE File Format</a></p>
