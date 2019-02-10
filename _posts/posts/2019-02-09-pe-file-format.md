@@ -461,3 +461,4 @@ As we can see, here we have many hardcoded offsets that once we are alerted are 
 <p><a href="https://github.com/erocarrera/pefile">Ero Carrera's pe file parser</a></p>
 <p><a href="https://www.aldeid.com/wiki/LordPE"> LordPE pe file parser and editor</a></p>
 <p><a href="http://wjradburn.com/software/">PEView pe file parser with a great GUI to see the headers</a></p>
+<p><a href="https://www.amazon.com/dp/144962636X/ref=pd_lpo_sbs_dp_ss_1?pf_rd_p=b4bbef4e-170e-463d-8538-7eff3394b224&pf_rd_s=lpo-top-stripe-1&pf_rd_t=201&pf_rd_i=1598220616&pf_rd_m=ATVPDKIKX0DER&pf_rd_r=8QKKVBWE2X2H9E3TBRK3&pf_rd_r=8QKKVBWE2X2H9E3TBRK3&pf_rd_p=b4bbef4e-170e-463d-8538-7eff3394b224">The Rootkit Arsenal, book with a lot of interesting information about the PE</a></p>
