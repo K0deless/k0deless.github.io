@@ -86,7 +86,7 @@ No... Not for the moment...
 
 <ul>
 {% if site.categories.articles == null %}
-No... Not for the moment...
+No... Not yet... Soon =)
 {% endif %}
 {% for post in site.categories.articles %}
 
