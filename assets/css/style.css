@@ -32,6 +32,17 @@ header, nav {
 	font: 10px/5px monospace;
 }
 
+@font-face {
+	font-family: "3dventure";
+	src: url("/fonts/3Dventure.woff")format("woff"), url("/fonts/3Dventure.tff")format("truetype");
+}
+.venture {
+	font-family: "3dventure";
+	font-size: 64px;
+	background-color: black;
+	color: greenyellow;
+}
+
 nav ul {
 	display: block;
 	padding: 0;
