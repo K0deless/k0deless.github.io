@@ -34,7 +34,7 @@ header, nav {
 
 @font-face {
 	font-family: "3dventure";
-	src: url("{{ site.baseurl }}/fonts/3Dventure.woff")format("woff"), url("{{ site.baseurl }}/fonts/3Dventure.tff")format("truetype");
+	src: url("../../fonts/3Dventure.woff")format("woff"), url("../../fonts/3Dventure.tff")format("truetype");
 }
 .venture {
 	font-family: "3dventure";
