@@ -1,10 +1,10 @@
 # Site specific settings
 title: "TheDoom"
-name: "Fare9's TheDoom"
-keywords: "reversing, malware, C, C++, ASM"
+name: "K0deless' TheDoom"
+keywords: "reversing, malware, C, C++, ASM, Social Engineering, Pentesting"
 baseurl: "/TheDoom/"
-url: "https://fare9.github.io/TheDoom/"
-description: "Web page where you will find my malware analysis, reference to my programs, and so on."
+url: "https://k0deless.github.io/TheDoom/"
+description: "UC3M Cybersecurity students webpage, where you'll find our research posts, papers and so on."
 cover: "/assets/img/cover.svg"
 fanpage_id: ""
 
@@ -18,9 +18,9 @@ ssl: true # It will redirect to https
 # facebook: lampiaosec # Rigth
 # facebook: facebook.com/lampiaosec # Wrong
 disqus: 
-twitter: Farenain 
+twitter:  
 facebook: 
-github: Fare9
+github: 
 google:
 
 # Build settings

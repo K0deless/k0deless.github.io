@@ -5,11 +5,7 @@ layout: default
 # $ cat about.txt
 {:id="about"}
 
-Reverse Engineer, Malware Analyst and sometimes low level programmer (C, C++, ASM, Python)...
-
-On this webpage I will upload some of my analysis, research papers or I will reference my tools.
-
-I hope you like it.
+UC3M Cybersecurity students webpage, here you'll find our research posts, papers...
 
 # $ cat team.txt
 {:id="team"}
