@@ -14,15 +14,24 @@ UC3M Cybersecurity students webpage, here you'll find our research posts, papers
 {% for member in site.categories.team reversed %}
 <li id="{{ member.title }}">{{ member.title }}
 <ul>
+{% if member.mail %}
 <li>{{ member.mail }}</li>
+{% endif %}
+
+{% if member.github %}
 <li><a href="https://github.com/{{ member.github }}">https://github.com/{{ member.github }}</a></li>
+{% endif %}
+
 {% if member.site %}
 <li><a href="{{ member.site }}">{{ member.site }}</a></li>
 {% endif %}
+
 {% if member.twitter %}
 <li><a href="https://twitter.com/{{ member.twitter }}">https://twitter.com/{{ member.twitter }}</a></li>
 {% endif %}
+
 </ul>
+
 </li>
 {% endfor %}
 </ul>
