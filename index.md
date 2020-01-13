@@ -41,7 +41,7 @@ UC3M Cybersecurity students webpage, here you'll find our research posts, papers
 
 <ul>
 {% for project in site.categories.analysis %}
-<li><a href="{{ project.link }}">{{ project.title }}</a> - {{ project.description }}</li>
+<li><a href="{{ project.link }}">{{ project.title }}</a> - {{ project.description }} - {{ project.author }}</li>
 {% endfor %}
 </ul>
 
