@@ -1,0 +1,267 @@
+# <a name="chapter1"></a> 1 - UNIX System Overview
+
+**Makefile for this chapter [Makefile](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/Makefile)**
+
+## Introduction
+Operating systems offer services for programs they run. Executing a new program, opening a file, reading a file, allocating a memory region, etc.
+
+## Unix Architecture
+Operating system software that controls the hardware resources of computer, provides environment where programs can run. This software is called the kernel.
+Interface to kernel is a layer of software called "system calls". And libraries of common functions are built on top of system call interface, application are free to use both. Shell is special application that provides interface for running other applications.
+
+Operating system = kernel + system utilities, applications, shells, libraries.
+
+## Login In
+
+**Login Name:**
+
+At login we give login name and password. System checks name and password in the file /etc/shadow. Our entry in the /etc/shadow is composed by different fields separated by colon: login name, encrypted password, user ID, group ID, comment field, home directory, and shell.
+We'll see in different chapters how to access to the files.
+
+## Shells
+command line interpreter that reads user input and executes commands. User input to a shell is from the terminal (interactive shell) or from a file (shell script). Common shells: bourne shell (/bin/sh), Bourne-again shell (/bin/bash), C shell (/bin/csh), Korn Shell (/bin/ksh), TENEX C shell (/bin/tcsh).
+Depending on system, one or another shell will be implemented.
+
+## Files and Directories
+
+**File System**
+
+UNIX file system is hierarchical arrangement of directories and files. Everything starts in directory root (/).
+Directory = file that contains directory entries. Each directory entry as containing a filename along with structure of information describing the attributes of the file. The attributes of file are: type of file (regular or directory), size of file, owner of file, permissions for file (whether other users may access this file), and when the file was last modified. "stat" and "fstat" functions return structure of information containing all attributes of a file.
+In chapter 4, we'll see distinction between logical view of directory entry and way it's stored on disk. Most UNIX file systems don't store attributes in directory entries themselves, because of difficulty of keeping them in synch when file has multiple hard links.
+
+*Filename* = names in directory. Only two characters cannot be in filename are slash (/) and null. Slash separates filenames that form pathname and null character terminates pathname. Good practice restrict characters in a filename to subset of normal printing characters. POSIX.1 recommends restricting filenames to following characters: letters (a-z,A-Z), numbers (0-9), period (.), dash (-) and underscore (\_).
+
+Two filenames created when new directory is created: . (dot) and .. (dot-dot). Dot refers to current directory, dot-dot refers to parent directory. In "root" dot and dot-dot are the same.
+
+*Pathname* = one or more filenames, separated by slashes, optionally starting with a slash, forms a "pathname". Pathname that begins with slash called "absolute pathname"; otherwise "relative pathname". Latter one refer to files relative to current directory. Name for root of file system (/) is special-case absolute pathname that has no filename component.
+
+Example: [my_ls.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/my_ls.c)
+
+In UNIX manual pages can be referenced by numbers, because more than one entry can exists, sections are normally numbered 1 through 8. For example the tool "ls" we've "copied" can be checked in manual as:
+
+```console
+    $ man 1 ls
+```
+
+or
+
+```console
+    $ man -s1 ls
+```
+
+If we name the source file as "my_ls.c" we can compile it into the default a.out with the C compiler "CC" as:
+
+```console
+    CC my_ls.c
+```
+
+From this program we can detail the next:
+
+1. Included one APUE header apue.h. Included in almost every program in book. Header includes some standard system headers and define numerous constant and function prototypes.
+2. We include system header dirent.h, to pick up function prototypes for opendir and readdir, in addition to definition of dirent structure. In some systems prototypes and definition of the structure are separated.
+3. Declaration of main uses style supported by ISO C standard.
+4. We take an argument from command line, argv[1], as name of the directory to list.
+5. Because of actual format of directory entries varies from one UNIX to another, we use opendir, readdir and closedir to manipulate directory.
+6. opendir function returns pointer to DIR structure, and we pass pointer to readdir function. We don't care about that DIR structure. We give it to readdir in a loop, to read each directory entry. readdir function returns a pointer to direct structure or, when it's finished with directory, a null pointer. We just take the name of the file (d_name).
+7. We use two functions of our handle of errors: err_sys and err_quit. The function err_sys prints an informative message describing what type of error was encountered ("Permission denied" or "Not a directory").
+8. When program is done, it calls the function exit with argument of 0. Function exit terminates a program. By convention, an argument of 0 means OK, and an argument between 1 and 255 means error ocurred. This value can be retrieved from a shell in variable $?.
+
+**Working Directory:**
+every process has working directory, sometime called "current working directory". This is directory from which relative pathnames are interpreted. Process can change working directory with chdir function. Relative pathname doc/memo/joe refers to file or directory joe, in directory memo, which must be a directory within the working directory. Looking just at pathname, we know that doc and memo have to be directories, but we can't tell if joe is file or directory. Pathname /usr/lib/lint is absolute path, refers to file or directory lint in directory lib, in directory usr, which is in root.
+
+**Home directory:**
+The working directory is set to our home directory. Obtained from our entry in password file.
+
+## Input and Output
+
+**File Descriptors:**
+
+normally small non-negative integers, kernel uses to identify files accessed by process, opening existing or creating a file, kernel returns file descriptor, we use when we want to read or write file.
+
+Standard Input, Standard Output, and Standard Error:
+
+By convention, all shells open three descriptors when program runs: standard input, standard output, and standard error. For a command like:
+
+```console
+    $ ls
+```
+three are connected to terminal. Shells provide a way of redirection:
+
+```console
+    $ ls > file.list
+```
+
+redirects standard output to a file named file.list.
+
+**Unbuffered I/O:**
+
+provided by functions open, read, write, lseek and close. These work with file descriptors.
+
+Example: program to read from standard input and wirte to standard output. [stdin_to_stdout.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/stdin_to_stdout.c)
+
+Header <unistd.h> included by apue.h, and constants STDIN_FILENO and STDOUT_FILENO are part of POSIX standard. Header contains function prototypes for many UNIX system services, such as read and write functions.
+Contants STDIN_FILENO and STDOUT_FILENO are in <unistd.h> and specify file descriptors for standard input and standard output, values are 0 and 1, respectively, we will use names for readability.
+Section 3.9 we'll examine BUFFSIZE constant.
+read function returns number of bytes that are read, value is used as number of bytes to write. When end of file is encountered, read returns 0 and program stops. If error ocurris, read returns -1 (as many system functions).
+Executing file as:
+
+```console
+   $ ./stdin_to_stdout > data
+```
+standard input will be the terminal, and standard output is redirected to file data, and standard error is also terminal. If output file doesn't exist, shell creates it by default. Program copy bytes until we type end-of-file character (CTRL+D).
+If we run:
+
+```console
+    $ ./stdin_to_stdout < infile > outfile
+```
+
+then file named infile will be copied to file named outfile.
+
+In chapter 3 we will see unbuffered I/O more detail.
+
+**Standard I/O:**
+
+buffered interface to the unbuffered I/O functions. Using standard I/O relieves us from having to choose optimal buffer sizes. Standard I/O simplify dealing with lines of input (common ocurrence in UNIX applications). fgets function, reads entire line. The read function, in contrast, reads a specifed number of bytes. Standard I/O library provide functions that let us control style of buffering used by library.
+Most common standard I/O function is printf. For those programs we will include <stdio.h> (included by apue.h), header contains function prototypes for all standard I/O functions.
+
+Example: [standard_stdin_to_stdout.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/standard_stdin_to_stdout.c) . Like previous program, program copies standard input to standard output and copy any regular file. Function getc used reads one character at a time, and character is written by putc, after last byte of input has been read, getc returns constant EOF (defined in <stdio.h>). Standard I/O constant stdin and stdout are also defined in <stdio.h> which refers to standard input and standard output.
+
+## Programs and Processes
+
+**Program:**
+executable file residing on disk in directory. Program is read into memory and executed by kernel as result of one of seven exec functions.
+
+**Processes and Process ID:**
+executing instance of a program is called a process. Some operating system  use term task to refer a program being executed. UNIX system guarantees every process has a unique numeric identifier called process ID. Process ID is always a non-negative integer.
+
+example: [print_pid.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/print_pid.c) example program that prints the pid of the running process calling the function getpid, it returns a pid_t data type. We don't know size, but standards guarantee that it will fit in a long integer. We cast it to the largest data type that it might use (long integer). Although most process IDs will fit in a int, using a long promotes portability.
+
+**Process Control:**
+Three primary functions for process control: fork, exec and waitpit (exec function has seven variants, but we refer all of them as exec function).
+
+Example: [very_simple_shell.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/very_simple_shell.c) example of process control features demonstrated on simple program, reads commands from standard input, and executes commands. Bare-bones implementation of shell-like program.
+
+Several features to consider in that little program. We use standard I/O fgets to read one line at a time from standard input. When we type end-of-file character (often CTRL+D) as first character of a line, fgets returns null pointer, loop stops, and process terminates. In chapter 18, we'll see all special terminal characters (end of file, backspace one character, erase entire line). Because each line returned by fgets is terminated with newline character, followed by null byte, we use standard C function strlen to calculate length of the string, then replace newline with null byte. This is done for execlp working properly. We call fork to create new process, which is a copy of caller. Caller is the parent and the newly created process is the child. fork returns: non-negative PID of new child process to parent, and 0 to the child.
+In the child, we call execlp to execute command read from standard input. Replaces child process with new program file. Combination of fork + exec is called spawning a new process. In UNIX, the two parts are separated by individual functions (we'll talk more about that in Chapter 8).
+Because of child process calls execlp to execute new program, parent should wait until child terminate. Done by calling waitpid, specifying which process to wait for: pid argument, which is process ID of child. waitpid returns termination status of child process (status variable), we don't do anything with that, but we could examine it to determine how child terminated.
+Most fundamental limitation of program, we can't pass arguments to command we execute. We can't, specify name of a directory list. We can execute ls only in working directory. To allow arguments would require we parse input line, separating arguments as separate parameter to execlp function.
+
+**Threads and Thread IDs:**
+
+Usually 1 process = 1 thread, one set of machine instructions executing at a time. Some problems are easier to solve when more than one thread can operate on different parts of problem. Additionally, multiple threads of control can exploit parallelism possible on multiprocessor systems.
+All threats within a process share same address space, file descriptors, stacks and process-related attributes. Each thread executes on its own stack, although any thread can access stacks of other threads. Because of access to same memory, threads need to synchronize access to shared data to avoid inconsistences.
+Like processes, threads are identified by IDs. Thread IDs, however, are local to a process. A thread ID from one process has no meaning in another process. We use thread IDs to refer to specific threads as we manipulate threads within a process.
+We'll see more in Chapter12 about thread parallelism and process parallelism.
+
+## Error Handling
+
+Error occurs in one UNIX System function, negative value often returned, integer errno, usually set to value tells why. Example, open function returns a non-negative file descritor if all is OK or -1 if error ocurrs. Error from open = about 15 possible errno values (files doesn't exist, permission problem, and so on). Some functions use a convention other than returning a negative value. Most functions that return pointer to object return null pointer to indicate error.
+File <errno.h> defines symbol errno, constants for each value errno can assume. Each of the constants starts with character E. Also first page of section 2 of UNIX system manuals, named intro(2) lists all these error constants. Example if errno is equal to constant EACCES, indicates permission problem, such as insufficient permission to open requested file (On Linux, error constants are listed in errno(3)). POSIX and ISO C define errno as symbol expanding into modificable lvalue of type integer. Can be integer that contains error number or function that returns pointer to error number. Definition:     extern int errno;
+In environment that supports threads, process address space is shared among multiple threads, each thread needs own local copy of errno. Linux supports multithreaded access to errno defining it as:
+```C
+        extern int *__errno_location(void);
+        #define errno (*__errno_location())
+```
+
+Two rules to be aware of with respect to errno. First: value is never cleared by a routine if error doesn't occur. We should examine its value only when return value indicates an error ocurred. Second, value of errno is never set to 0 by any of functions, none of constants defined in <errno.h> has value of 0.
+
+Also two functions are defined by C standard to help with printing error messages.
+
+```C
+    #include <string.h>
+    char *strerror(int errnum);     // returns: pointer to message string
+```
+
+Function maps errnum, typically errno value, into an error message string and returns a pointer to string.
+perror function produces error message on standard error, based on current value of errno, and returns.
+
+```C
+    #include <stdio.h>
+    void perror(const char *msg);
+```
+
+outputs the string pointed to by msg, followed by a colon and a space, followed by error message corresponding to value of errno, followed by newline.
+
+Example: [print_error.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/print_error.c) this program we'll see the use of strerror, and perror with common error numbers. Note we pass the name of the program (argv[0], whose value is ./print_error as argument to perror. Standard convention in UNIX system, doing this, if program is executed as part of pipeline, we are able to tell which of three programs generated a particular error. Instead of calling strerror or perror, we will use the error functions from appendix B. These functions let us use variable argument list facility of ISO C to handle error conditions with single C statement.
+
+**Error recovery:**
+
+errors in <errno.h> can be divided into two categories: fatal and nonfatal. fatal error has no recovery. Best we can do, print error message on user's screen or to log file, then exit. Nonfatal errors, can sometimes be dealt with more robustly. Most nonfatal errors are temporary, such as resource shortage, might not occur when there's less activity on system.
+Resource-related nonfatal erros: EAGAIN, ENFILE, ENOBUFS, ENOLCK, ENOSPC, EWOULDBLOCK, and sometimes ENOMEM. EBUSY can be treated as nonfatal, indicates that shared resource is in use. Sometimes, EINTR can be treated as nonfatal error when it interrupts a slow system call.
+Typical error recovery action, for resource-related non fatal error, delay and retry later. Can be used for example if an error indicates, a network connection is no longer functioning, it might be for application to delay a short time, then reestablish connection. Some applications use exponential backoff algorithm, waiting longer in each subsequent iteration.
+Ultimately, it is up to application developer determine cases where application can recover from an error. If reasonable recovery strategy can be used, we can improve robustness of our application by avoiding an abnormal exit.
+
+## User Identification
+
+**User ID:**
+
+numeric value that identifies us to system. User ID assigned by system administrator when our login name is assigned, we cannot change it. User ID normally assigned to be unique for every user. We'll see how kernel uses user ID to check whether we have appropiate permissions to perform certain operations.
+User ID with ID = 0 is root or superuser. Entry in password file normally has login name of root, we refer to special privileges of this user as superuser privileges. We'll see in Chapter 4, if process has superuser privileges, most file permission checks are bypassed. Some operating system functions are restricted to superuser. Superuser has free rein over the system.
+Mac OS X comes with superuser account disabled; server versions ship with account enabled. Apple's website show how to enable it.
+
+**Group ID:**
+
+our entry in password file also specifies numeric group ID. This is asigned by system administrator when our login name is assigned. Typically, password file contains multiple entries that specify same group ID. Groups normally used to collect users together into projects or departments. Allows sharing of resources, such as files, among members of same group. We'll see that we can set permissions on a file so all members of a group can access file, whereas others outside group cannot.
+There's group file that maps group names into numeric group IDs. Group file usually in /etc/group.
+Use of numeric IDs and numeric group IDs for permissions is historical. For every file, file system stores UID and GID of file's owner. Storing both requires only four bytes, assuming each is 2-byte integer. If full ASCII login name and group name were used, additional disk space would be required. Also comparing strings during permission checks is more expensive than comparing integers.
+Users work better with names than numbers, so password file maintains mapping between login names and UIDs, and group file provides mapping between group names and GIDs. ls -l command, prints login name of owner of a file, using password file to map numeric user ID into corresponding login name (early UNIX used 16-bit integer for UIDs and GIDs, current UNIX systems use 32-bit integers).
+
+Example: [get_ids.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/get_ids.c) program to see user ID and group ID of process owner (user which executes the program).
+
+**Supplementary Group IDs:**
+
+addition to GID specified in password file for login name, UNIX system allow user to belong other groups. Practice started with 4.2BSD, which allowed user to belong to up to 16 additional groups. Supplementary group IDs are obtained at login time reading the file /etc/group, and finding first 16 entries that list user as a member. As we will see in next chapter, POSIX requires system support at least 8 supplementary groups per process, but most systems support at least 16.
+
+## Signals
+
+technique used to notify a process some condition has occurred. If a process divides by zero, signal SIGFPE (floating-point exception) is sent to process. Process has three choices for dealing with signal.
+1. Ignore signal. Option isn't recommended for signals that denote a hardware exception, such as dividing by zero or referencing memory outside the address space of the process, as the results are undefined.
+2. Let default action occur. For a divide-by-zero condition, default is to terminate the process.
+3. Provide a function that is called when signal occurs (this is called "catching" signal). By providing a function of our own, we'll know when signal occurs and we can handle it as we wish.
+
+Many conditions generate signals. Two terminal keys, called interrupt key (often the DELETE key or CTRL-C) - and the quit key - often CTRL-backslash - are used to interrupt currently running process. Another way to generate a signal is calling the kill function. We can call this function from process to send a signal to another process. There are limitations: we have to be owner of the other process (or superuser) to be able to send it a signal.
+
+Example: [sig_int_catch.c](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/sig_int_catch.c) Recall bare-bones example (very_simple_shell.c). If we invoke program and press interrupt key, process terminates because default action for signal named SIGINT, is to terminate process. Process hasn't told kernel to do anything other than default with signal, so process terminates.
+To catch signal, program needs to call signal function, specifying name of the function to call when SIGINT signal is generated. Function is named sig_int; when it's called, just prints a message and a new prompt. Adding 11 lines to the program in very_simple_shell.c.
+
+## Time Values
+
+UNIX systems have maintained two different time values:
+        1. Calendar time. Value counts number of seconds since Epoch: 00:00:00 January 1, 1970, UTC. These time values are used to record time when file was last modified. Primitive system data type time_t holds these time values.
+        2. Process time. Also caled CPU time, measures central processor resources used by a process. Process time is measured in clock ticks, typically 50, 60 or 100 ticks per second. The primitive data type clock_t holds these time values. We'll see how to get that function in section 2.5.4 with function sysconf.
+
+When we measure execution time of process, as in Section 3.9, we'll see UNIX System maintains three values for process:
+
++ Clock time
++ User CPU time
++ System CPU time
+
+Clock time (or wall clock time), amount of time process takes to run, value depends on number of other processes being run on system. Whenever we report clock time, measurements are made with no other activities on system.
+User CPU time, is CPU time attributed to user instructions. System CPU is time attributed to kernel when it executes on behalf of the process. Example, whenever a process executes a system service (read or write), time spent within kernel performing that system service is charged to process. Sum of user CPU time and system CPU is often called CPU time.
+It is easy to measure clock time, user time, and system time using the command "time(1)", with argument to time command being command we want to measure. Example:
+
+```console
+    $ time -p grep _POSIX_SOURCE */*.h > /dev/null
+
+    real 0m0.81s
+    user 0m0.11s
+    sys  0m0.07s
+```
+
+Output format from time command, depends on shell being used, because some shells don't run /usr/bin/time, instead have a separate built-in function to measure time it takes commands to run.
+Section 8.17, we'll see how to obtain these three times from a running process. General topic of times and dates is covered in Section 6.10.
+
+## System Calls and Library Functions
+
+All operating systems provide service points through which programs request services from kernel. UNIX implementations, provides limited number of entry points directly into kernel called system calls. Version 7 Research UNIX System provided 50 syscalls, 4.4BSD about 110, and SVR4 has around 120. More recent systems have seen incredible growth in number of supported syscalls. Linux 3.2.0 has 380 syscalls, and FreeBSD 8.0 over 450.
+System call interface always has been documented in Section 2 of UNIX Programmer's Manual. Its definition is in C language, no matter implementation technique is used to invoke a system call. This differs from many older operating systems, which defined kernel entry point in assembly language of the machine. For our purposes, we can consider syscalls to be C functions.
+Section 3 of UNIX Programmer's Manual defines general-purpose library functions available to programmers. Functions aren't entry points into kernel, although they may invoke one or more of kernel's system calls. Example, printf may use to write system call to output a string, but strcpy (copy a string) and atoi (ASCII to integer) don't involve kernel at all.
+
+From implementor's point of view, distinction between system call and library function is fundamental. From user's perspective, difference is not as critical. From our perspective, both system calls and library functions appear as normal C functions. Both exist to provide services for application programs. We should realize, that we can replace library functions, whereas system calls usually cannot be replaced.
+Consider memory allocation function "malloc". There are many ways to do memory allocation and its garbage collection. UNIX system call that handles memory allocation, sbrk, is not general-purpose memory manager. Increases or decreases address space of process by specified number of bytes. How space is managed is up to process. Memory allocation function, malloc(3), implements one particular type of allocation. If we don't like operation, we can define own malloc function, which will probably use sbrk system call. In fact, numerous software packages implement their own memory allocation algorithms with sbrk syscall.
+System call in kernel allocates additional chunk of space on behalf of the process. malloc library function manages space from user level.
+Another example between syscall and library function, UNIX System interface to determine current time and date. Some OSs provide one syscall to return time and another return the date. Any special handling, such as switch to or from daylight saving time, handled by kernel or requires human intervention. UNIX System, provides single syscall that returns number of seconds since Epoch: 00:00, January 1, 1970, UTC. Any interpretation of value, such as converting it to human-readable time and date using local time zone, is left to user process. Standard C library provides routines to handle most cases.
+Another difference is that syscalls usually provide minimal interface, whereas library often provide more elaborate functionality. We've seen this in difference between sbrk syscall and malloc function. We'll see this also when we compare unbuffered I/O functions (Chapter 3) and standard I/O functions (Chapter 5).
+Process control syscalls (fork, exec and waitpid) usually invoker by user's application code directly. But some library routines exist to simplify certain common cases: system and popen library routines. We'll show implementation of system function that invokes basic process control syscalls.
+To define interface to UNIX System that most programmers use, we have to describe system calls and some of library functions. If we described only sbrk system call, we would skip more programmer-friendly malloc library that many applications use. We will use the term function to refer both syscalls and library functions, except when distinction is necessary.
