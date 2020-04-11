@@ -1,3 +1,16 @@
+---
+layout: post
+title: Advanced Programming in the UNIX Environment
+date: 2020-04-11 12:42:00
+categories: posts
+comments: true
+en: true
+description: Summary Post about Advanced Programming in the UNIX Environment (Chapter1)
+keywords: "ELF, Unix, POSIX, C, Programming"
+authors:
+    - Fare9
+---
+
 # <a name="chapter1"></a> 1 - UNIX System Overview
 
 **Makefile for this chapter [Makefile](https://github.com/K0deless/TheDoom/blob/master/code/APUE/chapter1/Makefile)**
