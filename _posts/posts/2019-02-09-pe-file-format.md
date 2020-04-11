@@ -7,8 +7,7 @@ comments: true
 en: true
 description: Little post about the windows PE file format
 keywords: "PE, Windows, Executables, Reversing"
-authors:
-    - Fare9
+authors: Fare9
 ---
 
 # PE File Format (by Fare9)
@@ -361,12 +360,16 @@ Usually when people talk about the PE header just talk about the structures and 
 * **RVA to Offset**: to calculate this, we have to go through the sections to know in which section is the RVA, for that we can do something like this:
 
 ```C
-PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew + 
-  sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
+PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + 
+  dos_header.e_lfanew + 
+  sizeof(DWORD) + 
+  sizeof(IMAGE_FILE_HEADER) + 
+  file_header.SizeOfOptionalHeader);
 
 for (index = 0; index < numberOfSections; index++)
 {
-  if (rva >= section[i].VirtualAddress && rva < (section[i].VirtualAddress + section[i].VirtualSize))
+  if (rva >= section[i].VirtualAddress && 
+      rva < (section[i].VirtualAddress + section[i].VirtualSize))
     return rva - section[i].VirtualAddress + section[i].PointerToRawData;
 }
 ```
@@ -374,12 +377,16 @@ for (index = 0; index < numberOfSections; index++)
 * **Offset to RVA**: as before, we have to know inside of which section is the offset, so to calculate that we can apply this:
 
 ```C
-PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + dos_header.e_lfanew + 
-  sizeof(DWORD) + sizeof(IMAGE_FILE_HEADER) + file_header.SizeOfOptionalHeader);
+PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)(base_address + 
+  dos_header.e_lfanew + 
+  sizeof(DWORD) + 
+  sizeof(IMAGE_FILE_HEADER) + 
+  file_header.SizeOfOptionalHeader);
 
 for (index = 0; index < numberOfSections; index++)
 {
-  if (offset >= section[i].PointerToRawData && offset < (section[i].PointerToRawData + section[i].SizeOfRawData))
+  if (offset >= section[i].PointerToRawData && 
+      offset < (section[i].PointerToRawData + section[i].SizeOfRawData))
     return offset - section[i].PointerToRawData + section[i].VirtualAddress;
 }
 ```
@@ -460,13 +467,14 @@ As we can see, here we have many hardcoded offsets that once we are alerted are 
 
 
 ## References
-[SalSA PE File Format](https://github.com/deptofdefense/SalSA/wiki/PE-File-Format)
-[kowalczyk PE File Format](https://blog.kowalczyk.info/articles/pefileformat.html)
-[Peering Inside the PE](https://github.com/tpn/pdfs/blob/master/Peering%20Inside%20the%20PE%20-%20A%20Tour%20of%20the%20Win32%20Portable%20Executable%20File%20Format.pdf)
-[Microsoft docs PE File Format](https://docs.microsoft.com/en-us/windows/desktop/debug/pe-format)
-[winnt.h](https://raw.githubusercontent.com/Alexpux/mingw-w64/master/mingw-w64-tools/widl/include/winnt.h)
-[Cool PDF with all the PE structures](http://www.openrce.org/reference_library/files/reference/PE%20Format.pdf)
-[Ero Carrera's pe file parser](https://github.com/erocarrera/pefile)
-[LordPE pe file parser and editor](https://www.aldeid.com/wiki/LordPE)
-[PEView pe file parser with a great GUI to see the headers](http://wjradburn.com/software/)
-[The Rootkit Arsenal, book with a lot of interesting information about the PE](https://www.amazon.com/dp/144962636X/ref=pd_lpo_sbs_dp_ss_1?pf_rd_p=b4bbef4e-170e-463d-8538-7eff3394b224&pf_rd_s=lpo-top-stripe-1&pf_rd_t=201&pf_rd_i=1598220616&pf_rd_m=ATVPDKIKX0DER&pf_rd_r=8QKKVBWE2X2H9E3TBRK3&pf_rd_r=8QKKVBWE2X2H9E3TBRK3&pf_rd_p=b4bbef4e-170e-463d-8538-7eff3394b224)
+
+* [SalSA PE File Format](https://github.com/deptofdefense/SalSA/wiki/PE-File-Format)
+* [kowalczyk PE File Format](https://blog.kowalczyk.info/articles/pefileformat.html)
+* [Peering Inside the PE](https://github.com/tpn/pdfs/blob/master/Peering%20Inside%20the%20PE%20-%20A%20Tour%20of%20the%20Win32%20Portable%20Executable%20File%20Format.pdf)
+* [Microsoft docs PE File Format](https://docs.microsoft.com/en-us/windows/desktop/debug/pe-format)
+* [winnt.h](https://raw.githubusercontent.com/Alexpux/mingw-w64/master/mingw-w64-tools/widl/include/winnt.h)
+* [Cool PDF with all the PE structures](http://www.openrce.org/reference_library/files/reference/PE%20Format.pdf)
+* [Ero Carrera's pe file parser](https://github.com/erocarrera/pefile)
+* [LordPE pe file parser and editor](https://www.aldeid.com/wiki/LordPE)
+* [PEView pe file parser with a great GUI to see the headers](http://wjradburn.com/software/)
+* [The Rootkit Arsenal, book with a lot of interesting information about the PE](https://www.amazon.com/dp/144962636X/ref=pd_lpo_sbs_dp_ss_1?pf_rd_p=b4bbef4e-170e-463d-8538-7eff3394b224&pf_rd_s=lpo-top-stripe-1&pf_rd_t=201&pf_rd_i=1598220616&pf_rd_m=ATVPDKIKX0DER&pf_rd_r=8QKKVBWE2X2H9E3TBRK3&pf_rd_r=8QKKVBWE2X2H9E3TBRK3&pf_rd_p=b4bbef4e-170e-463d-8538-7eff3394b224)
