@@ -11,7 +11,7 @@ authors:
     - Fare9
 ---
 
-# PE File Format
+# PE File Format (by Fare9)
 
 Usually when I give a talk or I give a class about reversing or malware analysis, after give an introduction to the x86 architecture (sorry I don't do ARM) and to the operating systems, I talk about the executable file formats. Once I read (I don't remember where) that the format of the executables use to define the operating system where these are run.
 On this post we are going to see the parts of this PE header, as these are structures used by the operating system to load the binary in memory, get the imports that the binary will use, and finally give the control flow to the binary for the execution. Also here we will find metadata from the binary inside of some fields from the structure.
