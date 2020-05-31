@@ -98,7 +98,7 @@ No... Not yet... Soon =)
 {% for post in site.categories.articles %}
 
 {% if post %}
-<li>{{ post.title }} :: <a href="{{ post.url }}" title="{{ post.description }}">en</a></li>
+<li>{{ post.title }} :: <a href="{{ post.link }}" title="{{ post.description }}">en</a></li>
 {% endif %}
 
 {% endfor %}
