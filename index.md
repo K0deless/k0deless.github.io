@@ -98,8 +98,8 @@ No... Not yet... Soon =)
 {% for post in site.categories.articles %}
 
 {% if post %}
-<li>{{ post.title }} :: <a href="{{ post.url  | prepend:site.baseurl }}}}" title="{{ post.description }}">en</a></li>
+<li>{{ post.title }} :: <a href="{{ post.url | prepend:site.baseurl }}}}" title="{{ post.description }}">en</a></li>
 {% endif %}
 
 {% endfor %}
-</ul>
+</ul>   

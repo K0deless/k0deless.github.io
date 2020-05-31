@@ -1,7 +1,7 @@
 ---
 title: Analysis of Turla, DragonFly (incl. 2.0) and Quedagh
 date: 2020-05-31 12:40:00
-categories: article
+categories: articles
 comments: true
 en: true
 link: https://github.com/K0deless/k0deless.github.io/blob/master/pdfs/documents/Turla%2C%20DragonFly%20(incl.%202.0)%2C%20Quedagh.pdf
