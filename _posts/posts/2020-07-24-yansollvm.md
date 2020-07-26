@@ -117,3 +117,7 @@ These are the different results from the execution:
 
 As we can see for each case, it evaluates the expressions with different intputs, finally it checks each output with the expected one, so once the four checks are correct the program tells us the synthesis of the operation.
 This same thing can be done with symbolic execution and the binary code instead of giving expressions, as done by the code in this (repo)[https://github.com/K0deless/k0deless.github.io/blob/master/code/YANSOllvm/symbolic_execution.py]
+
+The execution can be seen in the next picture:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-vm-symbolic-execution.png">
