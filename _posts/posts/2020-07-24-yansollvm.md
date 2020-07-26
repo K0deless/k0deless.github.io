@@ -100,3 +100,20 @@ As these operations are obfuscated, it's possible to execute them apart just to 
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-vm-xor-implementation.png">
 
+
+Now let's going to modify the code from Triton in order to test the equivalences from the obfuscated versions of the simple operations. The modified code can be found in this (repo)[https://github.com/K0deless/k0deless.github.io/blob/master/code/YANSOllvm/synthetizing_obfuscated_expressions.py]. If we run it, we can see the input values, and the result of the evaluation of given expressions.
+
+These are the different results from the execution:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-synthetizing-add.png">
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-sub-synthetizing.png">
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-and-synthetizing.png">
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-or-synthetizing.png">
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-xor-synthetizing.png">
+
+As we can see for each case, it evaluates the expressions with different intputs, finally it checks each output with the expected one, so once the four checks are correct the program tells us the synthesis of the operation.
+This same thing can be done with symbolic execution and the binary code instead of giving expressions, as done by the code in this (repo)[https://github.com/K0deless/k0deless.github.io/blob/master/code/YANSOllvm/symbolic_execution.py]
