@@ -55,7 +55,7 @@ And another one with compiled libs, where we will have the obfuscation passes li
 
 ### VM.cpp pass
 
-This pass of YANSOllvm will change different arithmetic and logic operations by functions which implement the same operation but in a scrambled way, so for example if you have in your code the add operation, you will have a call that implement something really simple, as some operations inside of a function and we will go watching what we have:
+This pass of YANSOllvm will change different arithmetic and logic operations by functions which implement the same operation but in a scrambled way, so for example if you have in your code the add operation, you will have a call that implement something really simple, as some operations inside of a function and we will go watching what we have, this changes implies a syntactic change but not a semantyc one:
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/example_simple_c.png">
 
