@@ -141,4 +141,4 @@ Now if we run the *opt* tool with our pass, and the dead code elimination:
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-and-or-deobfuscated.png">
 
-Until here would be the analysis of the **-vm** option from YANSOllvm how we've analyzed the obfuscated operations with Triton, and finally we've deobfuscated the generated **LLVM IR** with a **LLVM pass**.
+So far it would be the analysis of the **-vm** option from YANSOllvm how we've analyzed the obfuscated operations with Triton, and finally we've deobfuscated the generated **LLVM IR** with a **LLVM pass**.
