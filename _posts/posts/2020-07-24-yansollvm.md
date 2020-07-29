@@ -121,3 +121,24 @@ This same thing can be done with symbolic execution and the binary code instead 
 The execution can be seen in the next picture:
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-vm-symbolic-execution.png">
+
+
+As a final step once we've been able to analyze with Triton which kind of operation were these functions, in the same way that the code was generated with a LLVM pass, we can create another pass to deobfuscate the operations, I'm not an expert about LLVM so I've only been able to deobfuscate those without calls to other functions, but probably this could be optimized in order to deobfuscate the other calls. To deobfuscate the program we will write a simple FunctionPass that will go through each function instruction, and once it detects the last instruction from one of the methods it will modify that instruction for the simplified one, after that the **Dead Code Elimination (-dce)** pass will be called to delete the previous code in order to optimize the function and finally have only one instruction. The code for the pass can be found [here](https://github.com/K0deless/k0deless.github.io/blob/master/code/YANSOllvm/YANSOllvm-vm-combine.cpp), and its Makefile [here](https://github.com/K0deless/k0deless.github.io/blob/master/code/YANSOllvm/Makefile-YANSOllvm-vm-combine-pass), modify the name of the Makefile and change the paths for gcc and the llvm folder in order to compile the Pass. So if we remember the functions for **add**, **and** and **or**:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-vm-add-implementation.png">
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-vm-and-implementation.png">
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-vm-or-implementation.png">
+
+Now if we run the *opt* tool with our pass, and the dead code elimination:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-vm-combine-line.png">
+
+(yanso_test.ll contains the same than previous example_simple) And now if we see the output of the functions:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-add-deobfuscated.png">
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-and-or-deobfuscated.png">
+
+Until here would be the analysis of the **-vm** option from YANSOllvm how we've analyzed the obfuscated operations with Triton, and finally we've deobfuscated the generated **LLVM IR** with a **LLVM pass**.
