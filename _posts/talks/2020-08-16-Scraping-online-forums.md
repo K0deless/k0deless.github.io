@@ -1,5 +1,6 @@
 ---
-title: Scraping online forums for CTI in conference IntelCon 
+title: Scraping Online Hacking Forums for CTI 
+where: IntelCon by Ginseg 
 date: 2020-08-16 23:00:00
 categories: talks
 comments: true
