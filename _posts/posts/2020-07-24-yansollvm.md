@@ -142,3 +142,26 @@ Now if we run the *opt* tool with our pass, and the dead code elimination:
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-and-or-deobfuscated.png">
 
 So far it would be the analysis of the **-vm** option from YANSOllvm how we've analyzed the obfuscated operations with Triton, and finally we've deobfuscated the generated **LLVM IR** with a **LLVM pass**.
+
+### Merge.cpp pass
+
+Once I've explained the **VM** option which only replaces different assembly operations for calls to scrambled versions of those operations, we can move on to the **Merge** option, this option as it says in the [source code](https://github.com/emc2314/YANSOllvm/blob/master/lib/Transforms/Obfuscate/Merge.cpp#L25) it merges all those static functions. The static functions in C are those that its scope is limited to its object file, this means that even if we have a declaration in a header file, if we try to use the function from another file the linker will throw an error saying that the reference to the function is not defined.
+The **Merge** obfuscation at the beginning will check this, that the functions to merge are static, so the obfuscator doesn't need to take care about other files, only the one to obfuscate (this pass works for modules). Also another check is done to be sure that the function does not accept a variable number of arguments and the return type is integer, pointer or void. If all these conditions are met the obfuscation append them into a vector, once the pass has all the functions to implement in the switch it has to calculate the parameters to be used in the merged function, these will be separated in 3, those that are 32 bits, those of 64 bits and finally other types of parameters, the number for each one will be taken from the maximum of each merged function. The first parameter of the result function will be always the id for a switch statement, then each call to each function must be modified for a call to the merge function wilth the specific id of execution and with all the necessary parameters. Finally the function is inlined inside of one of the switch-case from the result function, the original function is removed from the final binary.
+
+Let's gonna see this once the binary is compiled in order to check how is the result, we can see at first glance our function completely clear without any obfuscation applied:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-func1-clear.png">
+
+As the decompiled code shows, it's a very simple program, it directly applies single operations to two numbers and nothing more, we can see the Control flow graph in the next image:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-func1-clear-cfg.png">
+
+Once we used the **VM** pass, we had that all of the arithmetic and boolean expressions were resolved to calls to functions which did the same than those operations, so we had the next code:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-func1-VM.png">
+
+What changed mainly here is the *call graph* from function1, also if the symbols from the names are removed it will be harder to know what is done inside one of the functions, the next picture shows the *call graph*:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/yanso-llvm/yanso-llvm-func1-VM-cg.png">
+
+
