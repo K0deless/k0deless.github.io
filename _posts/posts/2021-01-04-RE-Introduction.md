@@ -107,3 +107,125 @@ We commonly should care about:
 
 The others are also important, but commonly we will use these.
 
+### Registers for 64-bits
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/64-bit-registers.png"/>
+
+As we can see the registers in the architecture of 64 bits are an extension of previous registers, some other general purpose registers have been included: *r8, r9, r10, r11, r12, r13, r14 and r15*. These registers are useful for passing arguments to functions as we will see, because instead of using the stack for passing arguments to functions, we have a lot of register for this purpose.
+
+For our reversing the *RFLAGS* (extension of *EFLAGS*) will be like in previous case, we will use SF, ZF and CF.
+
+## Compilers and Compilation Process
+
+The explained processor only understand about bits, a bunch of '1's and '0's, as we know we join groups of 8 bits into a *byte*. Humans in order to represent bytes in a better way join series of 4 bits into what is called a *nibble* represented in hexadecimal.
+
+The bytes for the processor represent *op-codes* or *operation codes*, depending on the operation code the processor will do different things (mathematic operation, moving bytes, jumps, call functions, and so on). 
+
+At the beginning of programming [*punched cards*](https://en.wikipedia.org/wiki/Punched_card) were used for represeting a program through the presence or not of a hole in the card, programs were also programmed using the hexadecimal representations of the opcodes.
+
+As this process was pretty hard, something more related to human language was created, this is known as *assembly language* the instructions contains mnemonic names easier to remember than numbers, and a program known as *assembler* was the one who managed the translation from the assembly to the op-codes. The assembly language is specific to the architecture as not all the architectures have the same instructions nor the same registers.
+
+Finally, due to the lazy nature of human (and as a way to improve programming making it easier and faster), high-level languages were created, these were even closer to human language with logic constructions from english, these were languages like COBOL, C, FORTRAN, Pascal, and so on. These languages need by a special program called *Compiler* which parse the source code of the program to translate it to a serie of assembly instructions to finally assembly them into a binary loadable by an operating system. Currently the approach is different so a compiler commonly parses the source code into an intermmediate language, different optimizations are applied to this intermmediate representation of the program, a translation to a specific assembly language is done, this assembly is converted into an object file which contains references to other objects that need linking from libraries or other objects to finally generate a binary program.
+
+We can follow these steps with *gcc*, let's create a program called *test.c* with next content:
+
+```c
+#include <stdio.h>
+
+#define SHOW "Hello world!\n"
+
+int
+main(int argc, char **argv)
+{
+	printf(SHOW);
+
+	return 0;
+}
+```
+
+Now apply first the preprocessor of *gcc* which include the headers and expand all the macros: 
+
+```console
+$ gcc -E test.c -o test.i
+$ cat test.i
+...
+# 216 "/usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h" 3 4
+typedef long unsigned int size_t;
+# 34 "/usr/include/stdio.h" 2 3 4
+
+# 1 "/usr/include/x86_64-linux-gnu/bits/types.h" 1 3 4
+# 27 "/usr/include/x86_64-linux-gnu/bits/types.h" 3 4
+# 1 "/usr/include/x86_64-linux-gnu/bits/wordsize.h" 1 3 4
+# 28 "/usr/include/x86_64-linux-gnu/bits/types.h" 2 3 4
+
+
+typedef unsigned char __u_char;
+typedef unsigned short int __u_short;
+typedef unsigned int __u_int;
+typedef unsigned long int __u_long;
+...
+# 868 "/usr/include/stdio.h" 3 4
+
+# 2 "prueba.c" 2
+
+
+
+
+# 5 "prueba.c"
+int
+main(int argc, char **argv)
+{
+ printf("Hello world!\n");
+
+ return 0;
+}
+```
+
+Now let's compile this .i file into a .s which contains the assembly code:
+
+```console
+$ gcc -S test.i -o test.s
+$ cat test.s
+	.file	"test.c"
+	.text
+	.section	.rodata
+.LC0:
+	.string	"Hello world!"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movl	%edi, -4(%rbp)
+	movq	%rsi, -16(%rbp)
+	leaq	.LC0(%rip), %rdi
+	call	puts@PLT
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+Now we create the object file, this has been assembled but external references has not been resolved through linking, so we cannot *cat* this file, finally after that, we can link:
+
+```console
+$ gcc -c test.s -o test.o
+$ gcc test.o -o test
+$ file test.o
+test.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
+$ file test
+test: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=2af7d08ae5500a8677dbc0fa99dc960b5f92cf39, not stripped
+```
+
