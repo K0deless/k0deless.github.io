@@ -226,6 +226,62 @@ $ gcc test.o -o test
 $ file test.o
 test.o: ELF 64-bit LSB relocatable, x86-64, version 1 (SYSV), not stripped
 $ file test
-test: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=2af7d08ae5500a8677dbc0fa99dc960b5f92cf39, not stripped
+test: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, 
+BuildID[sha1]=2af7d08ae5500a8677dbc0fa99dc960b5f92cf39, not stripped
 ```
 
+This process is a one-way process so when a binary is provided, commonly is not possible to go back to source code apart from various decompilation techniques.
+
+## Linux
+
+As we said at the beginning, we will use Ubuntu as our system for learning about reverse engineering, this mean that we will use a system based on a *Linux* kernel, as we said the way a user program has for communicating with kernel is through system calls, in Linux two different ways are used one if the system is 32 bits or the other if system is 64 bits, system calls has a number that must be set in *eax*/*rax*, then the parameters must reside in the others registers (or in case of 32 bits on the stack too).
+
+The numbers of the system calls are different from 32 bits to 64 bit, next lists from Chromium OS Docs give system calls from Intel 32 and 64 bits, and also ARM and ARM64: [syscall numbers](https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md)
+
+Here we have two examples of a syscall to read in 32 bits and 64 bits:
+
+```
+000017d7 <read>:
+    17d7:	f3 0f 1e fb          	endbr32 
+    17db:	55                   	push   ebp
+    17dc:	89 e5                	mov    ebp,esp
+    17de:	53                   	push   ebx
+    17df:	83 ec 10             	sub    esp,0x10
+    17e2:	e8 be 00 00 00       	call   18a5 <__x86.get_pc_thunk.ax>
+    17e7:	05 0d 28 00 00       	add    eax,0x280d
+    17ec:	8b 4d 0c             	mov    ecx,DWORD PTR [ebp+0xc]
+    17ef:	8b 55 10             	mov    edx,DWORD PTR [ebp+0x10]
+    17f2:	b8 03 00 00 00       	mov    eax,0x3
+    17f7:	8b 5d 08             	mov    ebx,DWORD PTR [ebp+0x8]
+    17fa:	cd 80                	int    0x80
+    17fc:	89 45 f8             	mov    DWORD PTR [ebp-0x8],eax
+    17ff:	8b 45 f8             	mov    eax,DWORD PTR [ebp-0x8]
+    1802:	83 c4 10             	add    esp,0x10
+    1805:	5b                   	pop    ebx
+    1806:	5d                   	pop    ebp
+    1807:	c3                   	ret  
+```
+
+And 64 bits:
+
+```
+0000000000001954 <_read>:
+    1954:	f3 0f 1e fa          	endbr64 
+    1958:	55                   	push   rbp
+    1959:	48 89 e5             	mov    rbp,rsp
+    195c:	89 7d ec             	mov    DWORD PTR [rbp-0x14],edi
+    195f:	48 89 75 e0          	mov    QWORD PTR [rbp-0x20],rsi
+    1963:	48 89 55 d8          	mov    QWORD PTR [rbp-0x28],rdx
+    1967:	48 8b 7d ec          	mov    rdi,QWORD PTR [rbp-0x14]
+    196b:	48 8b 75 e0          	mov    rsi,QWORD PTR [rbp-0x20]
+    196f:	48 8b 55 d8          	mov    rdx,QWORD PTR [rbp-0x28]
+    1973:	48 c7 c0 00 00 00 00 	mov    rax,0x0
+    197a:	0f 05                	syscall 
+    197c:	48 89 c0             	mov    rax,rax
+    197f:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+    1983:	48 8b 45 f8          	mov    rax,QWORD PTR [rbp-0x8]
+    1987:	5d                   	pop    rbp
+    1988:	c3                   	ret    
+```
+
+As we can see, in 32 bits an interruption (a trap for the system) was used in order to do the system call, in 64 bits a specific instruction is used for the system call, it represent a faster way of doing a system call as no interruption must be managed by the system, this different mechanism is an improvement from previous one. Another thing we can see is that the number of system call is different, in 32 bits is 3 and in 64 bits is 0.
