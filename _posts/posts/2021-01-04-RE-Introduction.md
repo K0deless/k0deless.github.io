@@ -285,3 +285,131 @@ And 64 bits:
 ```
 
 As we can see, in 32 bits an interruption (a trap for the system) was used in order to do the system call, in 64 bits a specific instruction is used for the system call, it represent a faster way of doing a system call as no interruption must be managed by the system, this different mechanism is an improvement from previous one. Another thing we can see is that the number of system call is different, in 32 bits is 3 and in 64 bits is 0.
+
+### ELF Binaries
+
+The most common type of binaries that is executed under a Linux system are ELF binaries, these binaries contains different structures with information about target machine, the type of binary (executable/EXE or shared object/DYN for example), and also information about how the file is structured. 
+
+The first structure we can find in an ELF binary is the *Elf Header*:
+
+```c
+#define EI_NIDENT 16
+
+typedef struct {
+    unsigned char e_ident[EI_NIDENT];
+    uint16_t      e_type;
+    uint16_t      e_machine;
+    uint32_t      e_version;
+    ElfN_Addr     e_entry;
+    ElfN_Off      e_phoff;
+    ElfN_Off      e_shoff;
+    uint32_t      e_flags;
+    uint16_t      e_ehsize;
+    uint16_t      e_phentsize;
+    uint16_t      e_phnum;
+    uint16_t      e_shentsize;
+    uint16_t      e_shnum;
+    uint16_t      e_shstrndx;
+} ElfN_Ehdr;
+```
+
+This as we said contains information about the file, and offsets to the other headers, and ELF binary is made of segments pointed by *program headers* in order to read the program headers, the field *e_phoff* must be used to know the offset of the structures:
+
+```c
+typedef struct {
+    uint32_t   p_type;
+    Elf32_Off  p_offset;
+    Elf32_Addr p_vaddr;
+    Elf32_Addr p_paddr;
+    uint32_t   p_filesz;
+    uint32_t   p_memsz;
+    uint32_t   p_flags;
+    uint32_t   p_align;
+} Elf32_Phdr;
+
+typedef struct {
+    uint32_t   p_type;
+    uint32_t   p_flags;
+    Elf64_Off  p_offset;
+    Elf64_Addr p_vaddr;
+    Elf64_Addr p_paddr;
+    uint64_t   p_filesz;
+    uint64_t   p_memsz;
+    uint64_t   p_align;
+} Elf64_Phdr;
+```
+
+These segment structures contain information about the offset on disk, the virtual address or the relative virtual address (depending on the binary type) in memory, sizes on disk and in memory, flags about the segment (for example permissions like readable, writable or executable segment) and also the type of the segment, different types can be found, but maybe the most important for us is the **PT_LOAD** segments, these are the segments that are loaded in memory.
+
+Elf binaries also contains information that is important for linker, but it's not loaded to memory, these are the sections, the section structures are pointed by the field *e_shoff* from the first structure we say, and are the next structures:
+
+```c
+typedef struct {
+    uint32_t   sh_name;
+    uint32_t   sh_type;
+    uint32_t   sh_flags;
+    Elf32_Addr sh_addr;
+    Elf32_Off  sh_offset;
+    uint32_t   sh_size;
+    uint32_t   sh_link;
+    uint32_t   sh_info;
+    uint32_t   sh_addralign;
+    uint32_t   sh_entsize;
+} Elf32_Shdr;
+
+typedef struct {
+    uint32_t   sh_name;
+    uint32_t   sh_type;
+    uint64_t   sh_flags;
+    Elf64_Addr sh_addr;
+    Elf64_Off  sh_offset;
+    uint64_t   sh_size;
+    uint32_t   sh_link;
+    uint32_t   sh_info;
+    uint64_t   sh_addralign;
+    uint64_t   sh_entsize;
+} Elf64_Shdr;
+```
+
+Different information is represented in sections, the sections are contained inside of the segments, and as we said this is not loaded to memory as it's not necessary for the binary loader, and all the information for the dynamic solver (if dynamic solving of external functions is used), can be found in the Elf Dynamic header:
+
+```c
+typedef struct {
+    Elf32_Sword    d_tag;
+    union {
+        Elf32_Word d_val;
+        Elf32_Addr d_ptr;
+    } d_un;
+} Elf32_Dyn;
+extern Elf32_Dyn _DYNAMIC[];
+
+typedef struct {
+    Elf64_Sxword    d_tag;
+    union {
+        Elf64_Xword d_val;
+        Elf64_Addr  d_ptr;
+    } d_un;
+} Elf64_Dyn;
+extern Elf64_Dyn _DYNAMIC[];
+```
+
+These last header is pointed one of the segments, so dynamic linker can retrieve the address of these structures. This structure appears in those binaries compiled with dynamic linking, where all the necessary libraries are loaded with the binary and the imports are resolved by dynamic linker in run-time, other binaries are those compiled statically that contain the whole code from the library functions embedded in the binary, these are harder to analyze as nor the disassembler nor the debugger recognize these functions directly (recognition patterns must be used in order to detect the functions).
+
+#### PLT & GOT
+
+**TODO**
+
+
+More information about ELF exist on the elf man page, or my set of [elf notes](https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/pdfs/documents/elf_notes.pdf).
+
+
+### Linux API
+
+As well as on Windows you can find the well-known *"WIN32 API"* that specify the functions binaries can use from the different windows dlls (*kernel32.dll*, *user32.dll*, *ntdll.dll* and so on) to work with system resources as files, networking, windows registry or even crypto. On Linux we can find a great standard used as a compatibility layer between operating systems, these defines the *Application Programming Interface*(API), but it also defines the command line shells or the utilities the operating system must implement. This standard is known as **POSIX** (*Portable Operating System Interface*).
+
+This application programming interface provides ways to manage process creation and control (*fork*), control of signals produced by the program (*signal*), file management (*open*, *read*, *write*, *lseek*, *stat*, etc), I/O, sockets, etc. 
+
+Inside of POSIX we can also find the standard C specification, so standard management of files and other resources can be used (calls like *fopen* or *fread* are part of the standard C).
+
+In the same way analyst search information in msdn about different Windows Functions, we can search information about a function in manual pages of our operating system with the command *man* followed by the function name.
+
