@@ -54,3 +54,56 @@ So from the picture we can divide the architecture in:
 * *Main memory*
 * *Input/Output devices*
 
+## Intel Processors
+
+Intel Processors are the most common processor you can see in PCs or laptops (apart from recent use of ARM by Apple in their new M1 MacBook Pro). The Intel Processors are based on *Von Neumann* and have a [*CISC*](https://en.wikipedia.org/wiki/Complex_instruction_set_computer) set of instructions, it means that it contains a more complex set of instructions compared to a [*RISC*](https://en.wikipedia.org/wiki/Reduced_instruction_set_computer) set of instructions, where programs have a more reduced set of instructions increasing size of a program.
+
+The **security** of this architecture is based on a serie of *rings* as the next picture shows:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/intel-rings.png"/>
+
+Being the most privileged zone the center, and the least privileged zone the external rings, we will see only those programs that run on the last ring, these are the user-mode applications.
+
+The architecture works in two modes, once is the **real mode**, this is the mode used when the computer boot, and run instructions of 16 bits allowing high privilege instructions, this mode quickly set the architecture to work in the **protected mode**, this mode allows the concepts of virtual memory, and memory pages (the real mode works with memory segments), the memory pages implement permissions that are used for security too.
+
+
+### How User Application Interfaces with Kernel?
+
+User applications in order to use some utilities offered by the kernel, user programs needs a way to communicate with it, this mechanism is known as *system calls*, we will see later how this is implemented in *Linux* but for the moment is good to know that this mechanism is the one used to work with files, networking, threads, processes and so on. Without this, programs would be merely a bunch of mathematics operations.
+
+We will also see later that as the use of this *system calls* can be tough, interfaces exist in order to make easy the use through libraries that offers to programmers an easy way to use the *system calls* from their programs.
+
+## Intel Registers
+
+Once we've seen little bit of theory about the architecture, we'll see something that we'll see in every moment while debugging our binaries, these are the registers. As we said registers are memories with low storage capacity but fast to access, commonly data will be stored here in order to be used in instructions different code constructions can use different registers, we'll see later.
+
+### Registers for 32-bits
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/32-bit-registers.png"/>
+
+Previous picture shows the registers we can find in the intel architecture for 32 bits (and all of them contain as maximum 32-bit data), some of them can be used for general purposes (commonly found in the instructions) these are the *EAX, EBX, ECX, EDX, ESI and EDI*, the first four registers can be also divided into a subset of registers of 16 bits (*AX,BX,CX and DX*), and these are divided in two different registers of 8 bits each one, one being the lower part (finished in *L*) and the other the higher part (finished in *H*) of the 16-bit registers, these are inherited from previous architectures. 
+
+*ESI* and *EDI* are commonly used in special instructions for strings or memory arrays, where *ESI* points to a source memory, and *EDI* to destination. 
+
+*EAX* is used in many mathematics operations as the *accumulator* and the result is stored in here, we'll see later that *EAX* is very important in functions too.
+
+*ECX* is used as counter in loops.
+
+*ESP* and *EBP* are used in a memory structure used a lot during the execution, this memory holds the parameters of the functions, the local variables and return addresses, one of the registers point to the base (*EBP*) and the other to the top (*ESP*).
+
+Finally there's one register called *EIP* which points to the instruction to be executed.
+
+Those registers that are used as pointers to memory (*ESI*, *EDI*, *EBP*, *ESP* and *EIP*) are not used with lower size suffixes as those general purpose registers, as a pointer has a size of 32-bit.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/32-bit-eflags.jpeg"/>
+
+Finally to finish with registers of 32 bits, we have the *EFLAGS* these are used bit to bit, each bit has a meaning that is useful for different instructions, for example for conditional jumps as we will see.
+
+We commonly should care about:
+
+* SF (*Sign Flag*): set when the last mathematical operation modifies the last bit (used to indicate the sign of a number).
+* ZF (*Zero Flag*): set when last mathematical operation result in a zero value, used a lot in comparisons for conditional code constructions (*if/else*).
+* CF (*Carry Flag*): set when an arithmetic carry or borrow has been generated by an operation (a bit out of the bit-width of a register).
+
+The others are also important, but commonly we will use these.
+
