@@ -397,7 +397,64 @@ These last header is pointed one of the segments, so dynamic linker can retrieve
 
 #### PLT & GOT
 
-**TODO**
+ELF binaries compiled with dynamic linking contains different sections that are used for loading imports from libraries, these involve sections with *plt* and *got* name, due to the fact that a program cannot reference an unknown address (an external function) directly, the program points to a section called *plt*, *plt* contains an indirect jump instruction, this means that in the jump instruction a pointer is used, the value of the pointer should be the external function address, the pointer is in the *got* section. If the binary use lazy binding, the external functions are not resolved at first, but are resolved in the moment they are called. Let's going to explain it with an example:
+
+```
+08049196 <main>:
+8049196:	f3 0f 1e fb          	endbr32 
+804919a:	8d 4c 24 04          	lea    0x4(%esp),%ecx
+804919e:	83 e4 f0             	and    $0xfffffff0,%esp
+80491a1:	ff 71 fc             	pushl  -0x4(%ecx)
+80491a4:	55                   	push   %ebp
+80491a5:	89 e5                	mov    %esp,%ebp
+80491a7:	53                   	push   %ebx
+80491a8:	51                   	push   %ecx
+80491a9:	e8 28 00 00 00       	call   80491d6 <__x86.get_pc_thunk.ax>
+80491ae:	05 52 2e 00 00       	add    $0x2e52,%eax
+80491b3:	83 ec 0c             	sub    $0xc,%esp
+80491b6:	8d 90 08 e0 ff ff    	lea    -0x1ff8(%eax),%edx
+80491bc:	52                   	push   %edx
+80491bd:	89 c3                	mov    %eax,%ebx
+80491bf:	e8 9c fe ff ff       	call   8049060 <puts@plt>
+```
+
+```
+Section .plt:
+
+08049030 <.plt>:
+ 8049030:	ff 35 04 c0 04 08    	pushl  0x804c004
+ 8049036:	ff 25 08 c0 04 08    	jmp    *0x804c008
+ 804903c:	0f 1f 40 00          	nopl   0x0(%eax)
+ 8049040:	f3 0f 1e fb          	endbr32 
+ 8049044:	68 00 00 00 00       	push   $0x0
+ 8049049:	e9 e2 ff ff ff       	jmp    8049030 <.plt>
+ 804904e:	66 90                	xchg   %ax,%ax
+
+Section .plt.sec:
+
+08049060 <puts@plt>:
+ 8049060:	f3 0f 1e fb          	endbr32 
+ 8049064:	ff 25 0c c0 04 08    	jmp    *0x804c00c
+ 804906a:	66 0f 1f 44 00 00    	nopw   0x0(%eax,%eax,1)
+
+Section .got.plt:
+
+0804c000 <_GLOBAL_OFFSET_TABLE_>:
+ 804c000:	14 bf 04 08 00 00 00 00 00 00 00 00 40 90 04 08     ............@...
+ 804c010:	50 90 04 08 
+```
+
+In the main function we have a call to the address 0x8049060, this is an address in the section *.plt.sec*, in this section, there's a jump to the address pointed by the address 0x804c00c, as this binary use lazy binding, the address 0x804c00c does not contains the external address but it contains a pointer (0x08049040) to the section *.plt*, in that section we see an instruction pushing a value *0* and then a jump at the beginning of the *.plt*, with this the dynamic linker starts working to search the address of the function in all the loaded libraries.
+The pushed value (0), is an index in the *.rel.plt* section:
+
+```
+Found reloc section .rel.plt, relocs (2):
+
+[ ID]   OFFSET             INFO         REL. TYPE          SYM. VALUE       Symbol Name
+[  0] 000000000804c00c 0000000000000107 R_386_JMP_SLOT     0000000000000000 puts
+```
+
+Dynamic linker extracts from here the name (*puts*) and the address (0x0804c00c), this address will be overwritten with the address of the function once is resolved.
 
 
 More information about ELF exist on the elf man page, or my set of [elf notes](https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/pdfs/documents/elf_notes.pdf).
@@ -413,3 +470,38 @@ Inside of POSIX we can also find the standard C specification, so standard manag
 
 In the same way analyst search information in msdn about different Windows Functions, we can search information about a function in manual pages of our operating system with the command *man* followed by the function name.
 
+## Tooling
+
+At the beginning we said the tools we were gonna use, our disassembler will be *Ghidra* and as debugger we will use *gdb* with *gdb-peda*, let's gonna start looking how ghidra works and useful utilities from this disassembler.
+
+In order to start using Ghidra we need to install Java JDK that commonly also comes with JRE, the JDK version to install will be the version 11, you can download java from [here](https://adoptopenjdk.net/releases.html?variant=openjdk11&jvmVariant=hotspot). Once we have installed Java, we will download Ghidra, we can download it from [here](https://ghidra-sre.org/). Ghidra is already compiled and comes with different scripts to launch it:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-1.png"/>
+
+The scripts are both for Linux and for Windows, we will use the one for Linux. Once we open Ghidra, we'll see a screen like the next one:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-2.png"/>
+
+As no previous project exists, we will have to create a new project, the projects will contain the analyzed files, so click in *"File"*, and *"New Project"*, in the next window we select *Non-shared project* and we have to choose a path to store the project and a name for the project.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-3.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-4.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-5.png"/>
+
+Finally we will have something like the next window:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-6.png"/>
+
+We just have to drag and drop a file to the screen to import it:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-7.png"/>
+
+Ghidra will try to recognize the file type, architecture, endianess and if possible the compiler and with this recognize the calling convention we will see later. If we click twice on the file, the tool *Code Browser* will start and if the file has not been previously analyzed, the tool will ask us to auto-analyze it:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-8.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-9.png"/>
+
+We will leave the default options, and then wait until analysis has finished.
