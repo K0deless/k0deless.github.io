@@ -474,6 +474,8 @@ In the same way analyst search information in msdn about different Windows Funct
 
 At the beginning we said the tools we were gonna use, our disassembler will be *Ghidra* and as debugger we will use *gdb* with *gdb-peda*, let's gonna start looking how ghidra works and useful utilities from this disassembler.
 
+### Ghidra
+
 In order to start using Ghidra we need to install Java JDK that commonly also comes with JRE, the JDK version to install will be the version 11, you can download java from [here](https://adoptopenjdk.net/releases.html?variant=openjdk11&jvmVariant=hotspot). Once we have installed Java, we will download Ghidra, we can download it from [here](https://ghidra-sre.org/). Ghidra is already compiled and comes with different scripts to launch it:
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-1.png"/>
@@ -504,4 +506,32 @@ Ghidra will try to recognize the file type, architecture, endianess and if possi
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-9.png"/>
 
-We will leave the default options, and then wait until analysis has finished.
+We will leave the default options, and then wait until analysis has finished. Let's move to a function and see the main GUI of Ghidra:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/ghidra-10.png"/>
+
+Let's going to describe what we see:
+
+* Left side:
+    * Top: *Program Trees*: sections from the binary, these sections as we said are contained in ELF segments.
+    * Middle: *Symbol Tree*: here we have the program imports, the Exports, the recognized functions, labels from program, and in case of C++ programs classes and namespaces. This information will be retrieved from program header and also in the case of the functions, the recognized functions through different algorithms.
+    * Down: *Data Type Manager*: loaded data types by ghidra, these data types are commonly structures, enumerations and so on from different libraries, if the program contains symbols, structures defined by the program will be included, but here we can include our own data types.
+* Center:
+    * *Listing view*: here we have the main view of Code Browser, in this window we have the disassembly of the program, Ghidra separates the disassembly by functions, and in each function we have also references to data, the local variables as offsets of the stack with *EBP/RBP* or *ESP/RSP*, Ghidra allows us to rename the data from other sections, the local variables and also the function names.
+* Right side:
+    * *Decompiler*: Ghidra comes with a decompiler for different architectures, this tool tries to generate a pseudo-code as close as possible to the original source code, due to the all the information is lost in the compilation process, recoverying all the source code is not possible.
+
+These windows can be re-organized, and more windows can be included if we go up to *Window* and open any other tool, then is just a matter of drag and drop in order to organize the windows, in my case the one I included is the *Defined Strings* window, that shows all the recognized strings from the program.
+
+### GDB
+
+This is the debugger de-facto of Linux, it has a tough interface as it is a command line tool instead of having a graphic user interface (gdb has a built-in terminal user interface with the flag *-tui* in the command line). As a way to improve the experience with gdb, we will use a modified version of *gdb-peda*, with this plugin of gdb, we will have on the screen the disassembly of the program, register values and the stack:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/gdb-1.png"/>
+
+Useful gdb commands can be summarized into a couple of cheat sheets:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/gdb-2.jpg"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/gdb-3.png"/>
+
