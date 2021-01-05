@@ -531,7 +531,7 @@ This is the debugger de-facto of Linux, it has a tough interface as it is a comm
 
 Useful gdb commands can be summarized into a couple of cheat sheets:
 
-<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/gdb-2.jpg"/>
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/gdb-2.jpeg"/>
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/gdb-3.png"/>
 
