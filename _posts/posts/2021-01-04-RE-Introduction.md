@@ -605,3 +605,25 @@ mov [04052233h], ebx ; copy value in ebx to address
 ```
 inc dword ptr [04032221h] ; increment value in memory
 ```
+
+* Base pointer plus index (commonly used in arrays):
+
+```
+mov eax, [ebx+esi*4]
+```
+
+### LEA Instruction
+
+LEA (Load Effective Address) this instruction instead of accessing a memory address, treat what is inside of square brackets as an expression, and the result number is copied into destination. So for example:
+
+```
+LEA ebx, [ebp + 3]
+```
+
+If this would be a mov, it would go to the address pointed by ebp + 3, it would take the value and would copy it to ebx, with LEA it takes the value of ebp, add 3, and copy the result to ebx. The LEA instruction make use of a mathematic co-processor, and can execute also multiplication instructions:
+
+```
+LEA edx, [eax * 5]
+```
+
+This takes the value of eax, multiply it by 5, and assign the result to edx.
