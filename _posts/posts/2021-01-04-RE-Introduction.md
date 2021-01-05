@@ -535,3 +535,73 @@ Useful gdb commands can be summarized into a couple of cheat sheets:
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/gdb-3.png"/>
 
+Mainly we will use the next:
+
+* *break*: set a breakpoint in an address, as address a symbol can be given or a raw address.
+* *step*: execute next instruction (jump into functions).
+* *next*: execute next instruction (jump over functions).
+* *continue*: continue execution.
+* *run*: start the execution of the program.
+* *info breakpoints*: get all the breakpoints set.
+* *delete*: delete a breakpoint.
+* *x/nfu*: print the bytes from a given address.
+* *info follow-fork-mode*: show the fork mode option of gdb.
+* *set follow-fork-mode*: set the fork mode option of gdb.
+
+## Assembly
+
+Before starting with the assembly instructions, I have to difference between two syntax.
+
+* AT&T: this is the most common assembly syntax on Linux tools like gdb, objdump, etc. Registers are prefixed by '%', and immediate values use '$' before of the number, memory access are done with parenthesis '(' and ')', instructions commonly are followed by the size of the operands, and also the biggest difference the source operand goes first and destination the second one.
+
+```
+movl $40233033h, %ecx ; copy long to ecx
+movl (%eax), %ecx   ; copy long from address pointed
+                    ; by eax to ecx
+movl %ecx, %eax     ; copy value from ecx to eax
+```
+
+* Intel: the most used assembly syntax on windows and also on many tools used in reverse engineering, main differences with AT&T, no '%' nor '$', memory access is done through square brackets '[' and ']', finally destination operand goes first and source second one.
+
+```
+mov ecx, 40233033h ; copy long to ecx
+mov ecx, [eax]     ; copy long from address pointed
+                   ; by eax to ecx
+mov eax, ecx       ; copy value from ecx to eax
+```
+
+From these two, we will use the latter as it's the one used by Ghidra and also by the plugin of gdb-peda.
+
+### MOV instruction
+
+MOV instruction copies a immediate value, or from memory or a register to another register, or to memory. Different type of MOV instructions are allowed:
+
+* From immediate value to register:
+
+```
+mov eax, 40h ; copy the value 40 to eax
+```
+
+* From register to another register:
+
+```
+mov eax, ebx ; copy value from ebx to eax
+```
+
+* From immediate value to memory:
+
+```
+mov [04030201h], 33h ; copy value 33 to address
+```
+
+* From register to memory:
+
+```
+mov [04052233h], ebx ; copy value in ebx to address
+```
+
+* From memory to memory is only allowed in some instructions:
+
+```
+inc dword ptr [04032221h] ; increment value in memory
+```
