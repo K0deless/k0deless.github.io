@@ -627,3 +627,275 @@ LEA edx, [eax * 5]
 ```
 
 This takes the value of eax, multiply it by 5, and assign the result to edx.
+
+### String operations
+
+Different string operations exist in order to copy values from one address to other, load a value from source register address to accumulator, store value from accumulator to destination register address, comparison between values pointed by source and destination registers, and finally search value from accumulator in destination register address.
+
+* MOVS: copy value from memory pointed by ESI/RSI to memory pointed by EDI/RDI. Different operations: MOVSB, MOVSW, MOVSD, MOVSQ.
+* LODS: load a value from memory pointed by ESI/RSI to EAX/RAX. Different operations: LODSB, LODSW, LODSD, LODSQ.
+* STOS: store a value from EAX/RAX to memory pointed by EDI/RDI. Different operations: STOSB, STOSW, STOSD, STOSQ.
+* CMPS: compares values from memory pointed by ESI/RSI with memory pointed by EDI/RDI. Different operations: CMPSB, CMPSW, CMPSD, CMPSQ.
+* SCAS: instruction compares value in AL/AX/EAX/RAX with memory pointed by EDI/RDI. Different operations: SCASB, SCASW, SCASD, SCASQ.
+
+All these operations can be prefixed by REP instruction types:
+
+* REP: unconditional repeat, repeats until CX is zero.
+* REPE/REPZ: repeat until ZF is 0 or CX is zero.
+* REPNE/REPNZ: repeat until ZF is 1 or CX is zero.
+
+```
+LEA esi, [04050607h + 03h]; esi = 0405060Ah
+LEA edi, [04050600h + 02h]; edi = 04050602h
+movsd; copy 4 bytes from 0405060Ah to 04050602h
+```
+
+### Arithmetic operations
+
+* ADD
+
+```
+ADD eax, 02h; eax = eax + 2
+```
+
+* SUB
+
+```
+SUB eax, 20h; eax = eax - 0x20
+```
+
+* INC
+
+```
+INC eax; eax = eax + 1
+```
+
+* DEC
+
+```
+DEC eax; eax = eax - 1
+```
+
+### Logic operations
+
+* AND
+
+```
+AND eax, 00000100h; 1 when both bits are 1
+```
+
+* OR
+
+```
+OR eax, FFFFFFFFh; 1 when any of the bits is 1
+```
+
+* XOR
+
+```
+XOR eax, eax; 1 when 1-0 or 0-1, 0 in other case
+```
+
+* NOT
+
+```
+NOT eax; turn all the bits
+```
+
+* SHL/SHR
+
+```
+SHL/SHR eax, <number/cl>; shift bits to left or to right n times
+```
+
+* ROL/ROR
+
+```
+ROL/ROR eax, <mnumber/cl>; rotate bits to left or right n times
+```
+
+### Multiplication and Division
+
+Multiplication has different instructions with different use of registers:
+
+* MUL <reg/mem> ; multiply given value with al, ax, eax or rax, and store in ax, dx:ax, edx:eax and rdx:rax
+* IMUL <reg/mem> ; multiply given value with al, ax, eax or rax, and store in ax, dx:ax, edx:eax and rdx:rax
+* IMUL <reg1>,<reg2/mem> ; reg1 = reg1 * reg2/mem
+* IMUL <reg1>,<reg2/mem>,number; reg1 = reg2/mem * number
+
+MUL = Unsigned multiplication
+IMUL = Signed multiplication
+
+With division we have something similar to previous case
+
+* DIV <reg/mem> ; divide rdx:rax, edx:eax, dx:ax or ax with the given value, store esult in rax, eax, ax or al, and rest of division in rdx, edx, dx or ah.
+* IDIV <reg/mem> ; divide rdx:rax, edx:eax, dx:ax or ax with the given value, store esult in rax, eax, ax or al, and rest of division in rdx, edx, dx or ah.
+
+DIV = Unsigned division
+IDIV = Signed division
+
+### Memory for variables
+
+The variables of a program can be found in different parts of the memory of a program, here I will explain a little bit of where we will find the different variables of the program, in order to later continue explaining instructions.
+
+* *initialized global variables*: these variables are global to the program and have been initialized by the programmer in source code, in ELF we can find these variables in the *.data* section.
+* *non-initialized global variables*: as the previous one, these are global variables that have no value in source code, for that reason, these variables does not exist on disk and only exist on memory, these variables in an ELF file reside in the *.bss* section.
+* *strings*: the strings are asigned to a char pointer commonly, these are not modified and will be read-only, in an ELF file these are in *.rdata* section.
+* *Dynamically allocated variables*: these variables are dynamically allocated by the programmer according to the necessity of the program, a special memory space exist for this purpose and follows a specific structure to manage the memory chunks, this memory is known as *heap* and in case more memory is necessary, the operating system can be queried for more memory using the system calls *brk* and *sbrk*.
+* *Local variables*: these variables reside inside of the stack, we will talk about this memory later, but we can say now that this function stores the local variables of a function, as well as the parameters and return addresses.
+
+Stack and heap grows one in opposite to the other as we can see in the next image:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/process-memory.jpeg"/>
+
+### The stack
+
+As we previously said, the stack grows in opposite to the heap, and stores local variables, function parameters and return addresses. The stack starts at higher addresses and grows to lower addresses, let's going to see an example of an stack when a function is called.
+
+```
++-------------------------+  ^  Lower Addresses
+|                         |  |
+|  Not allocated space    |  |
+|                         |  |          ESP/RSP now
++-------------------------+  | <------+ points here
+|                         |  |
+|                         |  |
+|                         |  |
+|   char name[32]         |  |
+|                         |  |
+|                         |  |
+|                         |  |
+|                         |  |           EBP/RBP now
++-------------------------+  | <------+  points here
+|                         |  |
+|  Stored Base Pointer    |  |
+|  EBP                    |  |
++-------------------------+  |
+|                         |  |
+|  Return Address         |  |
+|  (EIP/RIP or RET)       |  |
++-------------------------+  |
+|                         |  |
+|  Function Parameters    |  |
+|                         |  |
++-------------------------+  |
+|                         |  |
+|  Previous Stack Frame   |  |
+|                         |  |
++-------------------------+  +  Higher Addresses
+```
+
+Previous image shows how would be a normal stack in a program like the next one:
+
+```c
+void function(int a, int b)
+{
+    char name[32];
+}
+
+int main()
+{
+    function(5,2);
+}
+```
+
+Two registers are used together as stack pointers in order to divide the stack for each function, this division is known as "frame" here reside function's local variables. The base pointer register *EBP* or *RBP* points to the frame base, and the stack pointer register *ESP* or *RSP* points to the top of the stack, in this way local variables can be accessed as *ESP/RSP + <offset>* or *EBP/RBP - <offset>*. Parameters are accessed by base pointer, first parameter would be *EBP + 8* in 32 bits, and *RBP + 0x10* in 64 bits (to jump over the stored frame base pointer and return value).
+
+From now on we will see the examples in 32 bits in order to reduce size of the post.
+
+### Push & Pop
+
+These instructions are used to push a value into the stack, and to pop it from the top of the stack, the syntax of each instruction is the next:
+
+```
+push <reg/mem/imm> ; push 4 bytes (in 32 bits)
+
+This is the same than:
+    sub esp, 4
+    mov [esp], <reg/mem/imm>
+
+pop <reg/mem> ; pop 4 bytes (in 32 bits)
+
+This is the same than:
+    mov <reg/mem>, [esp]
+    add esp, 4
+```
+
+As we know in programming, functions are used to avoid code repetition, but once a program moves into a function it must know where to return after the function. Functions commonly have parameters that as we now know are passed through the stack. Then a function is called (Through a CALL instruction).
+When the function is called, the return address is automatically pushed to the stack, and then a *prologue* code is executed in order to create a *frame* so the function has its own stack. The prologue allocates space for local variables substracting the necessary space to ESP.
+Finally once the function has finished, the stack frame is "freed" setting the ESP value equals to EBP, a pop to EBP is executed to return previous stack frame, and a return instruction takes the return address from the stack. Finally parameters are also freed, we'll see different ways to do it depending on something acalled "calling convention".
+
+**Calling Convention**
+
+Three different calling convention exist, and we will see it with an example:
+
+```c
+int adder(int a, int b)
+{
+    int value;
+    value = a+b;
+    return value;
+}
+
+int main()
+{
+    adder(1,2);
+}
+```
+
+**CDECL**
+
+The *CDECL* calling convention pass the parameters from right to left (first b and then a), and the caller function is the one that must clean the stack once the function has finished. This is the most common calling convention on Linux in opposite to the next one
+
+```
+proc main
+    push 2
+    push 1
+    call adder
+    add esp, 8 ; clean the stack from parameters
+endp
+
+proc adder
+    push ebp     ; 
+    mov ebp, esp ; prologue
+    sub esp, 4   ; allocates space
+    mov eax, [ebp + 8]
+    mov ebx, [ebp + C]
+    mov [esp], ebx
+    add [esp], eax
+    mov eax, [esp]
+    mov esp, ebp ; epilogue
+    pop ebp      ;
+    ret          ; return
+endp
+```
+
+**STDCALL**
+
+This calling convention is used mostly in Windows DLLs and is similar to previous one, parameters are passed from right to left too, but this time is the callee (function called) the one that cleans the stack.
+
+```
+proc main
+    push 2
+    push 1
+    call adder
+endp
+
+proc adder
+    push ebp     ; 
+    mov ebp, esp ; prologue
+    sub esp, 4   ; allocates space
+    mov eax, [ebp + 8]
+    mov ebx, [ebp + C]
+    mov [esp], ebx
+    add [esp], eax
+    mov eax, [esp]
+    mov esp, ebp ; epilogue
+    pop ebp      ;
+    ret 8        ; return & ; clean the stack from parameters
+endp
+```
+
+**Fastcall**
+
+This is a calling convention where registers are used together with the stack in order to pass the parameters, in 64 bits is used due to the fact that this architecture has more registers than in 32 bits. On Linux for 64 bits registers are in this order: *RDI, RSI, RDX, RCX, R8* and *R9*.
