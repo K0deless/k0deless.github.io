@@ -899,3 +899,39 @@ endp
 **Fastcall**
 
 This is a calling convention where registers are used together with the stack in order to pass the parameters, in 64 bits is used due to the fact that this architecture has more registers than in 32 bits. On Linux for 64 bits registers are in this order: *RDI, RSI, RDX, RCX, R8* and *R9*.
+
+### Unconditionals and Conditional Jumps
+
+These instructions are used to change control flow of a program. Two types of jumps exist:
+
+* Unconditionals: are always taken (JMP instruction)
+* Conditionals: depends on a condition (Jcc instructions).
+
+We've already seen in previous examples an unconditional jump, the instruction CALL acts as an unconditional jump but pushing the next instruction address on the stack.
+
+Conditional jumps depends on the EFLAGS/RFLAGS register we previously saw.
+
+The EFLAGS/RFLAGS are modified after an arithmetic-logic instruction, the value of the flag will be or '0' or '1'.
+
+Commonly the conditional jumps to set the flags use two types of comparison instructions:
+
+* *CMP*: this comparison instruction use substraction between the two values but without storing the result.
+* *TEST*: this one instead of substraction it applies an AND operation, again without storing the result.
+
+Next flags can be set from the previous instructions:
+
+* Zero Flag (ZF): result was 0.
+* Carry Flag (CF): result generated carry bit that cannot fit into register.
+* Sign Flag (SF): negative result.
+* Overflow Flag (OF): signed number that change its sign.
+
+| Conditional Jump | Description | EFLAGS used |
+|:----------------:|:------------|------------:|
+| JB/JNAE | Jump if below, or not greater nor equal, unsigned numbers | CF = 1 |
+| JNB/JAE | Jump if not below, above or equal, unsigned numbers | CF = 0 |
+| JE/JZ | Jump if equal or zero flag | ZF = 1 |
+| JNE/JNZ | Jump if not equal, not zero | ZF = 0 |
+| JL | Jump if lower than, signed numbers | (SF ^ OV) = 1 |
+| JGE/JNL | Jump if greater or equal, if not lower, signed numbers | (SF ^ OV) = 0 |
+| JG/JNLE | Jump if greater, if not lower or equal, signed numbers | ((SF ^ OV)|ZF) = 0 |
+
