@@ -926,12 +926,12 @@ Next flags can be set from the previous instructions:
 * Overflow Flag (OF): signed number that change its sign.
 
 | Conditional Jump | Description | EFLAGS used |
-|:----------------:|:------------|------------:|
+|:----------------:|:------------|:-----------:|
 | JB/JNAE | Jump if below, or not greater nor equal, unsigned numbers | CF = 1 |
 | JNB/JAE | Jump if not below, above or equal, unsigned numbers | CF = 0 |
 | JE/JZ | Jump if equal or zero flag | ZF = 1 |
 | JNE/JNZ | Jump if not equal, not zero | ZF = 0 |
 | JL | Jump if lower than, signed numbers | (SF ^ OV) = 1 |
 | JGE/JNL | Jump if greater or equal, if not lower, signed numbers | (SF ^ OV) = 0 |
-| JG/JNLE | Jump if greater, if not lower or equal, signed numbers | ((SF ^ OV)|ZF) = 0 |
+| JG/JNLE | Jump if greater, if not lower or equal, signed numbers | ((SF ^ OV)\|ZF) = 0 |
 
