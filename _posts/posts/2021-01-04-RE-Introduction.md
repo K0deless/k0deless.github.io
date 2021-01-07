@@ -997,6 +997,49 @@ This is a simple program that set the value 5 to the one local variable, and the
 
 #### Global Structures
 
+Now we move to another data type, now we'll see the structures, this data type is highly used as it can represent "real entities" as we would do with the classes in C++. Internally the binary does not understand about structures, nor variables with different fields, and everything is memory, so maybe a structure is just represent it as access to different variables. One of the approaches to "reconstruct" a structure is to follow the structure through functions where it's passed as parameter, commonly structures are passed as pointers, and its values are filled inside. The example we will see here is pretty simple, and I will give the structure that we will create on Ghidra in order to modify a variable type.
+
+So now let's going to load the binary global_struct into Ghidra, analyze it and go to main function.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-1.png"/>
+
+At first glance we can see some calls to API functions like *printf* or *fgets*, the function *fgets* reads the bytes specified as second argument from third argument (a file descriptor) and store the bytes into the buffer specified as first parameter, in this case the third argument is stdin so it reads 0x1d (29) bytes from keyboard to a global variable (at address 0x00601080). *printf* at the beginning ask user to write "user name" so we will say that probably this global variable is a buffer for name (a char buffer) with a size of 29 bytes. In case there's an error, the program we will see it returns -1 or 0xffffffff.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-2.png"/>
+
+Previous image shows how the program ask for user age, it uses format "%d" so we can think that the global variable at address 0x006010a0 is an integer, this global variable is 32 bytes (0x20) after the previous one, this is due to the fact that there's an alignment in memory of the structure.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-3.png"/>
+
+Now we have a global variable that is printed to the terminal which indicates the id that will be assigned to the user (address 0x00601070), the value from that variable is assigned to another global variable at address 0x006010a4, this variable follows the previous one from the structure and is assigned with AX, so this one is 2 bytes long (short type variable).
+
+The complete execution of the program looks like next picture:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-4.png"/>
+
+Let's going to create the structure on Ghidra, to do that we go to the *Data Type Manager* (down-left), we have to right click in the name of the binary we are analyzing *New* and *structure*:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-5.png"/>
+
+We will have a window like the next one:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-6.png"/>
+
+We will write a name like *user_t* and then we will start clicking in *DataType* and *Name* to write the data type and a name for the field. We will write *char[32]* and *name*, *int* and *age* and finally *short* and *id*. 
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-7.png"/>
+
+We must go to the first variable (the array of chars), and then we click twice to go to the data address, then we must right click in the global variable name, *data*->*choose data type*.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-8.png"/>
+
+And finally in the prompted dialog we have to write *user_t*, ghidra will show us the data type just press Enter. 
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_struct-9.png"/>
+
+The data has changed now and is not a bunch of unknown bytes. In the disassembler we will have some different fields, due to the fact that first field is also the beginning of the structure, is represented as the address of the structure. So just return to main function and see the differences.
+
+With this we've seen how to modify data types from a variable and also how to create structures.
 
 #### Local Structures
 
