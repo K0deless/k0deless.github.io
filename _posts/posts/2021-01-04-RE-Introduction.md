@@ -1075,6 +1075,41 @@ As we can see, better presentation is done, and we have our structure, the value
 
 #### Global Arrays
 
+Now we move to arrays, these are similar to structures as internally are contiguous memory but this time, instead of being different data types together, are the same type, this make easier the access as there will not be different offsets, all the fields are accessed by the same offset. Commonly in low level, access to an array is made with a base pointer, and index where to access and this index multiplied by size of the field (for example an integer array would be index * 4). To know the type of the array, a clue is commonly the way the program access to each field, so the MOV instruction commonly uses in Intel Syntax different access like *dword ptr* (4 bytes), *word ptr* (2 bytes) or *byte ptr* (1 byte).
+
+Let's load the binary *global_array* into ghidra, analyze it and rename *main* function.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-1.png"/>
+
+As we can see internally there are only access to different global variables, but these are followed. Also there are two different access, one is done by dwords (4 bytes), and the other is by bytes, commonly you initialize arrays through loops, but we will see them later.
+
+As we did with structures, we can change data type of global variables, we will modify the first accessed (or lower address) variable, and we will set its data type as an integer array of size 4.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-2.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-3.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-4.png"/>
+
+We can rename it, and return to main function to see the difference:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-5.png"/>
+
+Now we have an array of bytes, we can see that Ghidra shows the data as hexadecimal values, but maybe another representation would show something different, if we right click in a value and then we click in *Convert*, we can see that as char the value is 'H', let's going to transform each byte for a char.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-6.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-7.png"/>
+
+So now we can see that this array looks like a string defined as an array of chars, this is common in some malware in order to avoid string detection by tools like the disassemblers. we can go to the first char, and modify the data type by an array of chars of size 12.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-8.png"/>
+
+And if we go to the main function in the decompiler, we have the next:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-9.png"/>
+
+As we can see, now we don't have many different variables accessed, now we have two different arrays that are accessed index by index. This time with global variables, the program did not accessed the array as a base address + index but directly accessed by address.
 
 #### Local Arrays
 
