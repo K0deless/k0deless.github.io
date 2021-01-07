@@ -935,3 +935,78 @@ Next flags can be set from the previous instructions:
 | JGE/JNL | Jump if greater or equal, if not lower, signed numbers | (SF ^ OV) = 0 |
 | JG/JNLE | Jump if greater, if not lower or equal, signed numbers | ((SF ^ OV)\|ZF) = 0 |
 
+## Code Constructions
+
+Now we get the point where we will see real code, and more exactly we will see some code constructions in order to recognize them once we see common constructions that we can see in source code, but in assembly. Knowing about this will help us to think about how the source code looks, so if we detect the use of global variables for example we can rename them, in the same way if we detect a loop we can jump over it to next code, and so on.
+
+The files will be available in: **TODO UPLOAD EXAMPLES**
+
+Once you have downloaded the samples create a project on Ghidra for all the analysis.
+
+### Different Data Types
+
+Let's start by different data types we can find in a program and how are accessed, we will see the disassembly on Ghidra, also we will try to reconstruct some data as structures and arrays with Ghidra. 
+
+
+#### Global Variables
+
+As we previously said, we have two different types of global variables, those that are initialized and those that were not initialized, in both cases we will take it as the same type (because are accessed in the same way). Global variables are commonly accessed by its global address, we will load on Ghidra the example *global_var* and let's analyze the main function.
+
+Once we've loaded the binary and analyze it, we will have the next entry point:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var1.png"/>
+
+This is the common start for binaries compiled with gcc, libc start function is executed, we can find the *main* function as parameter in RDI (address *0x004004ad*). We can rename the function and include the common parameters from main and return value.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var2.png"/>
+
+Now we can see the main function in the disassembler, as we can see one global variable is accessed as we said by its address (addresses 0x0040057b and 0x00400594), but those global variables that contain strings are renamed with the string as a name (addresses 0x00400585 and 0x0040058c). Also we can see how the function *puts* is called using a fastcall calling convention, setting the parameters in RDI and RSI, renamed by Ghidra as argc and argv due to the parameters of main functions.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var3.png"/>
+
+Next pictures show these global variables before and after renaming:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var4.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var5.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var6.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var7.png"/>
+
+Now if we see again the main function, we have the next:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var8.png"/>
+
+Giving meaningful name to global addresses can help us to understand what a program is doing with them, also it will help the decompiler view to have better representation as we see in next image:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var9.png"/>
+
+#### Local Variables
+
+
+#### Global Structures
+
+
+#### Local Structures
+
+
+#### Global Arrays
+
+
+#### Local Arrays
+
+
+#### Pointers
+
+
+### Conditional constructions (if/else)
+
+
+### Multiple paths (switch)
+
+
+### Loops (for/do-while/while)
+
+
+### Functions
