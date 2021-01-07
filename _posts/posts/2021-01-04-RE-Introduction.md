@@ -939,7 +939,7 @@ Next flags can be set from the previous instructions:
 
 Now we get the point where we will see real code, and more exactly we will see some code constructions in order to recognize them once we see common constructions that we can see in source code, but in assembly. Knowing about this will help us to think about how the source code looks, so if we detect the use of global variables for example we can rename them, in the same way if we detect a loop we can jump over it to next code, and so on.
 
-The files will be available in: **TODO UPLOAD EXAMPLES**
+The files will be available in: [examples.zip](https://github.com/K0deless/k0deless.github.io/blob/master/code/RE-Intro/examples.zip) (examples.zip SHA-256: 263c71b7cb7c8f5861db33f1779b2209877d437a693559bd8cb996b2981cbde8)
 
 Once you have downloaded the samples create a project on Ghidra for all the analysis.
 
