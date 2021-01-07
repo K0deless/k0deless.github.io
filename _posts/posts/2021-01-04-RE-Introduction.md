@@ -1109,10 +1109,29 @@ And if we go to the main function in the decompiler, we have the next:
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_array-9.png"/>
 
-As we can see, now we don't have many different variables accessed, now we have two different arrays that are accessed index by index. This time with global variables, the program did not accessed the array as a base address + index but directly accessed by address.
+As we can see, now we don't have many different variables accessed, now we have two different arrays that are accessed index by index. This time with global variables, the program did not accessed the array as a base address + index as this would be the common way to access in a loop with an index value.
 
 #### Local Arrays
 
+Now we move to the stack representation of the arrays, again as in the previous case, we have that more than accessing an array, it looks like it access different local variables, but we can fix it modifying the stack variables in order to generate arrays. 
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_array-1.png"/>
+
+In order to create an array of 4 integers in the variable *local_38* we will have to delete the variables *local_34, local_30, local_2c* as we did with the structures.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_array-2.png"/>
+
+Now we can create the array with no problems:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_array-3.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_array-4.png"/>
+
+Disassembler now shows its representation as an array access, let's gonna do the same with the char array, and rename both fields:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_array-5.png"/>
+
+As we've seen these are not very different from the global arrays, so once we have these concepts we will be able to recognize interesting data types, leaving just one to finish the explanation of data types.
 
 #### Pointers
 
