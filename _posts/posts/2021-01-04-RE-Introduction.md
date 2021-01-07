@@ -984,6 +984,16 @@ Giving meaningful name to global addresses can help us to understand what a prog
 
 #### Local Variables
 
+Now we'll see the local variables that in source code are declarated inside of a function, these are stored on the stack and will be accessed by ESP/RSP or EBP/RBP. As in the previous case we will load the binary in Ghidra, as we know how to go to main function we can directly go to this. Load the binary local_var go to main function and rename it:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_var1.png"/>
+
+As we can see Ghidra represent the local variables with the offset, this time it uses RBP to access the local variables, we can also rename the local variables:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_var2.png"/>
+
+This is a simple program that set the value 5 to the one local variable, and the value 2 to the other. The value 5 is used as dividend and it must be set in EAX, then DIV instruction is called using the value 2 as divisor, the quotient will be in EAX and remainder in EDX, these results are stored in two local variables. 
+
 
 #### Global Structures
 
