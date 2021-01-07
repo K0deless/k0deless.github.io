@@ -1043,6 +1043,35 @@ With this we've seen how to modify data types from a variable and also how to cr
 
 #### Local Structures
 
+Let's move to next example, we will take similar code than previous in order to understand how a structure works on the stack instead of being a global variable. The structure will be the same in this case, let's load the binary *local_struct* into ghidra and analyze it.
+
+Once you have opened the code browser and the binary analyzed, move to main function and rename it as we've done in all the previous cases. We will focus in the specific code that assigned values to the structure fields, first the call to fgets that was used to retrieve user name:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_struct-1.png"/>
+
+In opposite to previous case where the structure was global, now we have that *RBP* is used to access specific offset *RBP-0x30*, this is loaded in *RAX* using a LEA instruction, Ghidra includes the *=>local_38* in order to allow us write a name for the local variable, we could rename it as "name" but as we know is a structure, we will wait. Finally, RAX is copied into RDI (*argc* in the disassembler).
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_struct-2.png"/>
+
+We move to the second field of the structure, this time we have that the code access to the same offset of *RBP*, but after the LEA instruction we have an ADD. This ADD moves the pointer 0x20 to higher address. This offset will be used by the function *scanf* to store the integer into the *age* field.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_struct-3.png"/>
+
+Finally we have the access to the *id* field, instead of using the offset -0x30 with *RBP* it uses the offset -0x14 (represented with the name *local_14* for renaming purposes), the compiler decided to use directly the offset instead of using an offset and an operation.
+
+So now let's repeat previous operation, create a structure with the three fields and the name. Now in order to set the variable as the structure, we will have to go to the beginning of the function:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_struct-4.png"/>
+
+And remove the variables *local_18* and *local_14*, once we've removed those variables right clicking in the name and in *Function Variables* click in *Delete Local Variable*, we will right click in *local_38* and we will set the data type as we already saw with the structure *user_t*. We will have now the stack like the next picture:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_struct-5.png"/>
+
+If we rename it, and we go to the decompiler we will have the next (in order to show all the view in one picture):
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/local_struct-6.png"/>
+
+As we can see, better presentation is done, and we have our structure, the value *DAT_00601070* is just a global counter.
 
 #### Global Arrays
 
