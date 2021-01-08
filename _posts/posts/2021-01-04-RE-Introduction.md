@@ -1135,6 +1135,33 @@ As we've seen these are not very different from the global arrays, so once we ha
 
 #### Pointers
 
+Now we move into the last data type we'll see, the pointers. Pointers are probably what makes C so powerfull, it allows a programmer to work directly with the memory, pointers allow also to treat some memory as an array of structures or just one structure (structure pointer). We can think pointers as *variables* that store the address of another *variable* (as the most simple description). We will see now an example which include a cast from one type of pointer to other.
+Load the example *pointers* into Ghidra, analyze it and rename *main* function.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/pointers-1.png"/>
+
+Previous image shows us the first pointer, we have the variable *local_24* a value of *4* is assigned to this variable, let's think about it as an integer. Now we have a LEA instruction to that local variable (address 0x00400575), this LEA instruction retrieves the address of *local_24*, this value is then stored in the variable *local_20*, so *local_20* does not store really a value but an address. Once the first value is printed, since address 0x00400593 we have that the address stored in *local_20* is loaded into RAX and value *4* is replaced by value *10*. Again *local_24* is printed to user, next image shows the result:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/pointers-2.png"/>
+
+Let's move to the second pointer, this time is a pointer to a global variable, we have a buffer of chars, but we going to assign a value in a "weird" way. Instead of assigning characters to specific positions we will assign dwords, but we have to remember that we use a little-endian architecture, so we will separate a 7 byte word into 2 dwords, as the word must finish into 0, we have 8 bytes:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/pointers-3.png"/>
+
+We can the dwords into char sequences:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/pointers-4.png"/>
+
+Finally the char sequence is printed:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/pointers-5.png"/>
+
+
+Now we've finished with data types, we've seen at the end pointers, pointers as we said are very important, pointers are used for dynamic allocation, as well as to pass different data to functions as parameters, commonly a structure is passed as a pointer to a function, so this function can modify the structure instead of modifying a local one. Pointers can also point to functions and execute them in another function (passing the pointer as parameter).
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/pointers-6.jpeg"/>
+
+We'll move into common code constructions like conditionals if/else code and switch branching, then we will move to loops, and finally we'll see functions.
 
 ### Conditional constructions (if/else)
 
