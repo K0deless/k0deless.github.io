@@ -1161,10 +1161,57 @@ Now we've finished with data types, we've seen at the end pointers, pointers as 
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/pointers-6.jpeg"/>
 
-We'll move into common code constructions like conditionals if/else code and switch branching, then we will move to loops, and finally we'll see functions.
+We'll move into common code constructions like if/else code or switch with jump tables, then we will move to loops, and finally we'll see functions.
 
 ### Conditional constructions (if/else)
 
+This kind of code construction helps to the program to take decisions, in other case, a program would be just a sequence of instructions executing once after the other. We already saw the instructions that are involved in conditional code, these are TEST or CMP for comparing values and finally conditional jumps for branching to one part of the code or the other.
+
+Let's going to see a simple example of this conditional construction, load the example *if-else* into ghidra, analyze it, and rename main as always.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/if_else-1.jpeg"/>
+
+So at the top of main function we have the first comparison at the address 0x00400635, it compares the variable *local_2c* with the value 2, if we go above, we can see that the value of *local_2c* is taken from EDI at the beginning of the function, if we remember how a *main* function looks like it's something like:
+
+```c
+int
+main(int argc, char **argv)
+```
+
+So we have that EDI is the first argument, and in this case is argc, the number of arguments given to the program as parameters in the command line. So this comparison check that to the program were provided 2 parameters, being the first one the name of the run binary, and the second the value that our program request. The comparison is a CMP instruction, that substract one value with the other, in case both are equal the *zero flag* is set to 1, in other case is set to 0, then we have a conditional jump JZ, so it jumps if *zero flag* is set, so both numbers *argc* and 2 must be equal. We could reconstruct this as:
+
+```c
+int
+main(int argc, char **argv)
+{
+    if (argc != 2)
+    {
+        // if is not 2 execute this
+    }
+
+    // if is 2, jumps to here
+}
+```
+
+In case the value is not 2, an error message is shown to the user and execution finishes with an *exit* with the value 0xFFFFFFFF or in decimal -1. We can rename the branches too, so we can rename where is the destination in case argc equals to two. Also let's rename *local_2c* as *argc* and *local_38* as argv. As you already know, you can change its type too :D.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/if_else-2.jpeg"/>
+
+Now we have a call to *strtoull* this function converts one string to an unsigned long long value, we have two comparisons and two jumps, the first comparison takes the value of errno and gets its value the instruction TEST applies an AND operation without storing result, this is commonly used to check if a value is 0, so if EAX is 0, the zero flag will be set. In case EAX is not zero (errno value is set) the code jumps directly to the error code, in opposite case, the next check is done, next check gets the argv[1] value and check if the pointer is equals to *local_20*, *local_20* stores the end of the string address, this would mean that what it has been introduced is not a correct number. In case argv[1] and *local_20* are different, the program can jump to the good code, in opposite case, an error happened and code exit.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/if_else-3.jpeg"/>
+
+We've arrived to the last part of the code, this time the comparison is against the value 0x1122334455667788 with the variable *local_18* this variable contains the value from *strtoull* so is checking the user number with a hardcoded one. In  case the numbers are the same, the code is correct, in opposite case error is shown to the user.
+
+Let's gonna see the program in execution:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/if_else-4.jpeg"/>
+
+Ups, it looks like that number does not work... Or maybe we have to provide it in other way, strtoull accepts as third parameter the base for the number, and now is set to 10. If we go to python and we check which is the number to provide we get *1234605616436508552*
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/if_else-5.jpeg"/>
+
+We could also use Ghidra in order to modify how the number is presented to modify hexadecimal by decimal base.
 
 ### Multiple paths (switch)
 
