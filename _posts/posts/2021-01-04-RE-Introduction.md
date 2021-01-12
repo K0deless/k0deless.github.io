@@ -1215,6 +1215,87 @@ We could also use Ghidra in order to modify how the number is presented to modif
 
 ### Multiple paths (switch)
 
+Now we'll see another conditional type of code, when you have to compare a variable with many different values, instead of writting many if/else if/else statements, we can use the switch statement, switch statement can join also case statements (the comparison values) and execute common code. Once the code of a case has executed, programmer needs to include a *break* sentence in order to jump out of switch. 
+
+Depending on the number of values, switch can be created in two ways, one is using similar internal code than if/else conditional code, through comparison instructions and conditional jumps. The second way of implementing a switch internally is using a table of jumps, this table would contain the address of the code to execute in the different cases, table is accessed by index, and the index is obtained from all the cases in the switch, so for example:
+
+```C
+#include <stdlib.h>
+
+int
+main(int argc, char **argv)
+{
+    int i = atoi(argv[1]);
+
+    switch(i)
+    {
+    case 0:
+        ...
+        break;
+    case 1:
+        ...
+        break;
+    case 2:
+        ...
+        break;
+    case 3:
+        ...
+        break;
+    case 4:
+        ...
+        break;
+    case 5:
+        ...
+        break;
+    default:
+        ...
+    }
+}
+```
+
+In the previous code, we would have a table with 7 jumps for example, each one with a jump to a code to execute, as the value is an integer, we could use its value as the index for the table, as the cases are sorted from 0 to 5 and a default case, pointing to the table and jumping to the address pointed we would execute the code of the switch, then a jump out of the switch would be the internal representation of the *break* statement.
+
+**CMP-JMP**
+
+Let's going to see both cases, as we'll see one is exactly as previous case with if/else, load the sample *switch-cmp-jmp* into Ghidra and move directly to main function. We have a local variable *local_9* rename it to *user_char* and we have the next code:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_1.png"/>
+
+Previous image shows a code where the program ask user to write a character, and then it reads it through *getchar* API, this char value then it goes through a switch but it's implemented as if/else statements, the reason is that compiler has not found a proper way to implement it as a table and index access to the table, it compares the *user_char* with values like 0x64, 0x61, 0x73 and 0x77. If we convert the values into chars we'll see better what the switch is checking:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_2.png"/>
+
+The program would be a little and stupid "videogame" controller, we have is asking for one of the common characters used in videogames to move 'w', 'a', 's' and 'd'. If we see the way used to check the value, we can see is done through comparisons and jumps, in a pretty similar way than previous if/else conditional code. If we follow the jumps and rename the addresses we get to the next code:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_3.png"/>
+
+If we run the code we get the next:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_4.png"/>
+
+**SWITCH-TABLE**
+
+Now we have to load *switch-table* sample and move to *main* function as before.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_5.png"/>
+
+Here we have the first part of the code, now the program ask us for a number between 1 and 10, it compares the introduced value with 0xA (10) and if above (JA, so it uses unsigned values) it jumps to the last case:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_6.png"/>
+
+This is the default case from switch, so it's checked at the beginning if number is not one of cases, just jump to default. In other case the next code is executed:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_7.png"/>
+
+This code uses number introduced to calculate the address where to jump using the number as index, the code in address *0x0040070a* is the one that is responsible to obtain the exact address, the used table is the next one:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_8.png"/>
+
+This is a table of offsets that once the program adds the index, it gets where to jump, next image shows the cases with the address where it can jumps:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/switch_9.png"/>
+
+With this we've seen the two ways how switch statements are implemented, we will have to move to the last two topics covered in this introductory course, the loops and finally the functions.
 
 ### Loops (for/do-while/while)
 
