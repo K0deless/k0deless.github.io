@@ -18,6 +18,51 @@ This text will be a first approach to reverse engineering aimed to teach those w
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/re-2.png" alt="Example of ARM disassembled code"/>
 
+## Index
+
+1. [Reverse Engineering](https://k0deless.github.io/posts/RE-Introduction/#Introduction)
+2. [Computer Architecture](https://k0deless.github.io/posts/RE-Introduction/#ComputerArchitecture)
+3. [Intel Processors](https://k0deless.github.io/posts/RE-Introduction/#IntelProcessors)
+    3-1. [How User Application Interfaces with Kernel?](https://k0deless.github.io/posts/RE-Introduction/#KernelOSInterface)
+4. [Intel Registers](https://k0deless.github.io/posts/RE-Introduction/#Registers)
+    4-1. [Registers for 32-bits](https://k0deless.github.io/posts/RE-Introduction/#Registers32Bits)
+    4-2. [Registers for 64-bits](https://k0deless.github.io/posts/RE-Introduction/#Registers64Bits)
+5. [Compilers and Compilation Process](https://k0deless.github.io/posts/RE-Introduction/#Compilers)
+6. [Linux](https://k0deless.github.io/posts/RE-Introduction/#Linux)
+    6-1. [ELF Binaries](https://k0deless.github.io/posts/RE-Introduction/#ELFBinaries)
+        6-1-1. [PLT & GOT](https://k0deless.github.io/posts/RE-Introduction/#PltAndGot)
+    6-2. [Linux API](https://k0deless.github.io/posts/RE-Introduction/#POSIX)
+7. [Tooling](https://k0deless.github.io/posts/RE-Introduction/#Tooling)
+    7-1. [Ghidra](https://k0deless.github.io/posts/RE-Introduction/#Ghidra)
+    7-2. [GDB](https://k0deless.github.io/posts/RE-Introduction/#GDB)
+8. [Assembly](https://k0deless.github.io/posts/RE-Introduction/#Assembly)
+    8-1. [MOV Instruction](https://k0deless.github.io/posts/RE-Introduction/#MovInstruction)
+    8-2. [LEA Instruction](https://k0deless.github.io/posts/RE-Introduction/#LeaInstruction)
+    8-3. [String Operations](https://k0deless.github.io/posts/RE-Introduction/#StringOperations)
+    8-4. [Arithmetic Operations](https://k0deless.github.io/posts/RE-Introduction/#ArithmeticOperations)
+    8-5. [Logic Operations](https://k0deless.github.io/posts/RE-Introduction/#LogicOperations)
+    8-6. [Multiplication and Division](https://k0deless.github.io/posts/RE-Introduction/#MulAndDiv)
+    8-7. [Memory for variables](https://k0deless.github.io/posts/RE-Introduction/#MemAndVariables)
+    8-8. [The stack](https://k0deless.github.io/posts/RE-Introduction/#Stack)
+    8-9. [Push & Pop](https://k0deless.github.io/posts/RE-Introduction/#PushAndPop)
+    8-10. [Unconditionals and Conditional Jumps](https://k0deless.github.io/posts/RE-Introduction/#Jumps)
+9. [Code Constructions](https://k0deless.github.io/posts/RE-Introduction/#CodeConstructions)
+    9-1. [Different Data Types](https://k0deless.github.io/posts/RE-Introduction/#DataTypes)
+    9-1-1. [Global Variables](https://k0deless.github.io/posts/RE-Introduction/#GlobalVars)
+    9-1-2. [Local Variables](https://k0deless.github.io/posts/RE-Introduction/#LocalVars)
+    9-1-3. [Global Structures](https://k0deless.github.io/posts/RE-Introduction/#GlobalStructures)
+    9-1-4. [Local Structures](https://k0deless.github.io/posts/RE-Introduction/#LocalStructures)
+    9-1-5. [Global Arrays](https://k0deless.github.io/posts/RE-Introduction/#GlobalArrays)
+    9-1-6. [Local Arrays](https://k0deless.github.io/posts/RE-Introduction/#LocalArrays)
+    9-1-7. [Pointers](https://k0deless.github.io/posts/RE-Introduction/#Pointers)
+    9-2. [Conditional constructions (if/else)](https://k0deless.github.io/posts/RE-Introduction/#IfElse)
+    9-3. [Multiple paths (switch)](https://k0deless.github.io/posts/RE-Introduction/#Switch)
+    9-4. [Loops (for/do-while/while)](https://k0deless.github.io/posts/RE-Introduction/#Loops)
+    9-5. [Functions](https://k0deless.github.io/posts/RE-Introduction/#Functions)
+10. [Practical Example, static and dynamic analysis with Ghidra & GDB](https://k0deless.github.io/posts/RE-Introduction/#PracticalExample)
+99. [Last Words](https://k0deless.github.io/posts/RE-Introduction/#LastWords)
+
+
 ## <a name="Introduction"></a> Reverse Engineering
 
 The art of reverse engineering is not something from recent history nor something that was created in ancient times of the first mainframes computers, we can go to the book *Reversing: Secrets of Reverse Engineering* by Eldad Eilam in order to give a description of what is this art:
@@ -35,7 +80,7 @@ In this post we will make use of Ubuntu as our Operating System for the examples
 
 The knowledge acquired in this post could be useful for you in malware analysis, exploiting or cracking. Not always these skills are used from an *evil* perspective, as companies can use people with reverse engineering skills to find vulnerabilities and errors in their programs in order to correct them as soon as possible.
 
-## Computer Architecture
+## <a name="ComputerArchitecture"></a> Computer Architecture
 
 As a first approach to reverse engineering I think it's interesting to learn where all our software run, having a deep knowledge of the architecture it's useful in our analysis as it helps us to understand what the instruction does, and how the binaries work.
 
@@ -54,7 +99,7 @@ So from the picture we can divide the architecture in:
 * *Main memory*
 * *Input/Output devices*
 
-## Intel Processors
+## <a name="IntelProcessors"></a> Intel Processors
 
 Intel Processors are the most common processor you can see in PCs or laptops (apart from recent use of ARM by Apple in their new M1 MacBook Pro). The Intel Processors are based on *Von Neumann* and have a [*CISC*](https://en.wikipedia.org/wiki/Complex_instruction_set_computer) set of instructions, it means that it contains a more complex set of instructions compared to a [*RISC*](https://en.wikipedia.org/wiki/Reduced_instruction_set_computer) set of instructions, where programs have a more reduced set of instructions increasing size of a program.
 
@@ -67,17 +112,17 @@ Being the most privileged zone the center, and the least privileged zone the ext
 The architecture works in two modes, once is the **real mode**, this is the mode used when the computer boot, and run instructions of 16 bits allowing high privilege instructions, this mode quickly set the architecture to work in the **protected mode**, this mode allows the concepts of virtual memory, and memory pages (the real mode works with memory segments), the memory pages implement permissions that are used for security too.
 
 
-### How User Application Interfaces with Kernel?
+### <a name="KernelOSInterface"></a> How User Application Interfaces with Kernel?
 
 User applications in order to use some utilities offered by the kernel, user programs needs a way to communicate with it, this mechanism is known as *system calls*, we will see later how this is implemented in *Linux* but for the moment is good to know that this mechanism is the one used to work with files, networking, threads, processes and so on. Without this, programs would be merely a bunch of mathematics operations.
 
 We will also see later that as the use of this *system calls* can be tough, interfaces exist in order to make easy the use through libraries that offers to programmers an easy way to use the *system calls* from their programs.
 
-## Intel Registers
+## <a name="Registers"></a> Intel Registers
 
 Once we've seen little bit of theory about the architecture, we'll see something that we'll see in every moment while debugging our binaries, these are the registers. As we said registers are memories with low storage capacity but fast to access, commonly data will be stored here in order to be used in instructions different code constructions can use different registers, we'll see later.
 
-### Registers for 32-bits
+### <a name="Registers32Bits"></a> Registers for 32-bits
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/32-bit-registers.png"/>
 
@@ -107,7 +152,7 @@ We commonly should care about:
 
 The others are also important, but commonly we will use these.
 
-### Registers for 64-bits
+### <a name="Registers64Bits"></a> Registers for 64-bits
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/64-bit-registers.png"/>
 
@@ -115,7 +160,7 @@ As we can see the registers in the architecture of 64 bits are an extension of p
 
 For our reversing the *RFLAGS* (extension of *EFLAGS*) will be like in previous case, we will use SF, ZF and CF.
 
-## Compilers and Compilation Process
+## <a name="Compilers"></a> Compilers and Compilation Process
 
 The explained processor only understand about bits, a bunch of '1's and '0's, as we know we join groups of 8 bits into a *byte*. Humans in order to represent bytes in a better way join series of 4 bits into what is called a *nibble* represented in hexadecimal.
 
@@ -232,7 +277,7 @@ BuildID[sha1]=2af7d08ae5500a8677dbc0fa99dc960b5f92cf39, not stripped
 
 This process is a one-way process so when a binary is provided, commonly is not possible to go back to source code apart from various decompilation techniques.
 
-## Linux
+## <a name="Linux"></a> Linux
 
 As we said at the beginning, we will use Ubuntu as our system for learning about reverse engineering, this mean that we will use a system based on a *Linux* kernel, as we said the way a user program has for communicating with kernel is through system calls, in Linux two different ways are used one if the system is 32 bits or the other if system is 64 bits, system calls has a number that must be set in *eax*/*rax*, then the parameters must reside in the others registers (or in case of 32 bits on the stack too).
 
@@ -286,7 +331,7 @@ And 64 bits:
 
 As we can see, in 32 bits an interruption (a trap for the system) was used in order to do the system call, in 64 bits a specific instruction is used for the system call, it represent a faster way of doing a system call as no interruption must be managed by the system, this different mechanism is an improvement from previous one. Another thing we can see is that the number of system call is different, in 32 bits is 3 and in 64 bits is 0.
 
-### ELF Binaries
+### <a name="ELFBinaries"></a> ELF Binaries
 
 The most common type of binaries that is executed under a Linux system are ELF binaries, these binaries contains different structures with information about target machine, the type of binary (executable/EXE or shared object/DYN for example), and also information about how the file is structured. 
 
@@ -395,7 +440,7 @@ extern Elf64_Dyn _DYNAMIC[];
 
 These last header is pointed one of the segments, so dynamic linker can retrieve the address of these structures. This structure appears in those binaries compiled with dynamic linking, where all the necessary libraries are loaded with the binary and the imports are resolved by dynamic linker in run-time, other binaries are those compiled statically that contain the whole code from the library functions embedded in the binary, these are harder to analyze as nor the disassembler nor the debugger recognize these functions directly (recognition patterns must be used in order to detect the functions).
 
-#### PLT & GOT
+#### <a name="PltAndGot"></a> PLT & GOT
 
 ELF binaries compiled with dynamic linking contains different sections that are used for loading imports from libraries, these involve sections with *plt* and *got* name, due to the fact that a program cannot reference an unknown address (an external function) directly, the program points to a section called *plt*, *plt* contains an indirect jump instruction, this means that in the jump instruction a pointer is used, the value of the pointer should be the external function address, the pointer is in the *got* section. If the binary use lazy binding, the external functions are not resolved at first, but are resolved in the moment they are called. Let's going to explain it with an example:
 
@@ -460,7 +505,7 @@ Dynamic linker extracts from here the name (*puts*) and the address (0x0804c00c)
 More information about ELF exist on the elf man page, or my set of [elf notes](https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/pdfs/documents/elf_notes.pdf).
 
 
-### Linux API
+### <a name="POSIX"></a> Linux API
 
 As well as on Windows you can find the well-known *"WIN32 API"* that specify the functions binaries can use from the different windows dlls (*kernel32.dll*, *user32.dll*, *ntdll.dll* and so on) to work with system resources as files, networking, windows registry or even crypto. On Linux we can find a great standard used as a compatibility layer between operating systems, these defines the *Application Programming Interface*(API), but it also defines the command line shells or the utilities the operating system must implement. This standard is known as **POSIX** (*Portable Operating System Interface*).
 
@@ -470,11 +515,11 @@ Inside of POSIX we can also find the standard C specification, so standard manag
 
 In the same way analyst search information in msdn about different Windows Functions, we can search information about a function in manual pages of our operating system with the command *man* followed by the function name.
 
-## Tooling
+## <a name="Tooling"></a> Tooling
 
 At the beginning we said the tools we were gonna use, our disassembler will be *Ghidra* and as debugger we will use *gdb* with *gdb-peda*, let's gonna start looking how ghidra works and useful utilities from this disassembler.
 
-### Ghidra
+### <a name="Ghidra"></a> Ghidra
 
 In order to start using Ghidra we need to install Java JDK that commonly also comes with JRE, the JDK version to install will be the version 11, you can download java from [here](https://adoptopenjdk.net/releases.html?variant=openjdk11&jvmVariant=hotspot). Once we have installed Java, we will download Ghidra, we can download it from [here](https://ghidra-sre.org/). Ghidra is already compiled and comes with different scripts to launch it:
 
@@ -523,7 +568,7 @@ Let's going to describe what we see:
 
 These windows can be re-organized, and more windows can be included if we go up to *Window* and open any other tool, then is just a matter of drag and drop in order to organize the windows, in my case the one I included is the *Defined Strings* window, that shows all the recognized strings from the program.
 
-### GDB
+### <a name="GDB"></a> GDB
 
 This is the debugger de-facto of Linux, it has a tough interface as it is a command line tool instead of having a graphic user interface (gdb has a built-in terminal user interface with the flag *-tui* in the command line). As a way to improve the experience with gdb, we will use a modified version of *gdb-peda*, with this plugin of gdb, we will have on the screen the disassembly of the program, register values and the stack:
 
@@ -548,7 +593,7 @@ Mainly we will use the next:
 * *info follow-fork-mode*: show the fork mode option of gdb.
 * *set follow-fork-mode*: set the fork mode option of gdb.
 
-## Assembly
+## <a name="Assembly"></a> Assembly
 
 Before starting with the assembly instructions, I have to difference between two syntax.
 
@@ -572,7 +617,7 @@ mov eax, ecx       ; copy value from ecx to eax
 
 From these two, we will use the latter as it's the one used by Ghidra and also by the plugin of gdb-peda.
 
-### MOV instruction
+### <a name="MovInstruction"></a> MOV Instruction
 
 MOV instruction copies a immediate value, or from memory or a register to another register, or to memory. Different type of MOV instructions are allowed:
 
@@ -612,7 +657,7 @@ inc dword ptr [04032221h] ; increment value in memory
 mov eax, [ebx+esi*4]
 ```
 
-### LEA Instruction
+### <a name="LeaInstruction"></a> LEA Instruction
 
 LEA (Load Effective Address) this instruction instead of accessing a memory address, treat what is inside of square brackets as an expression, and the result number is copied into destination. So for example:
 
@@ -628,7 +673,7 @@ LEA edx, [eax * 5]
 
 This takes the value of eax, multiply it by 5, and assign the result to edx.
 
-### String operations
+### <a name="StringOperations"></a> String Operations
 
 Different string operations exist in order to copy values from one address to other, load a value from source register address to accumulator, store value from accumulator to destination register address, comparison between values pointed by source and destination registers, and finally search value from accumulator in destination register address.
 
@@ -650,7 +695,7 @@ LEA edi, [04050600h + 02h]; edi = 04050602h
 movsd; copy 4 bytes from 0405060Ah to 04050602h
 ```
 
-### Arithmetic operations
+### <a name="ArithmeticOperations"></a> Arithmetic Operations
 
 * ADD
 
@@ -676,7 +721,7 @@ INC eax; eax = eax + 1
 DEC eax; eax = eax - 1
 ```
 
-### Logic operations
+### <a name="LogicOperations"></a> Logic Operations
 
 * AND
 
@@ -714,7 +759,7 @@ SHL/SHR eax, <number/cl>; shift bits to left or to right n times
 ROL/ROR eax, <mnumber/cl>; rotate bits to left or right n times
 ```
 
-### Multiplication and Division
+### <a name="MulAndDiv"></a> Multiplication and Division
 
 Multiplication has different instructions with different use of registers:
 
@@ -734,7 +779,7 @@ With division we have something similar to previous case
 DIV = Unsigned division
 IDIV = Signed division
 
-### Memory for variables
+### <a name="MemAndVariables"></a> Memory for variables
 
 The variables of a program can be found in different parts of the memory of a program, here I will explain a little bit of where we will find the different variables of the program, in order to later continue explaining instructions.
 
@@ -748,7 +793,7 @@ Stack and heap grows one in opposite to the other as we can see in the next imag
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/process-memory.jpeg"/>
 
-### The stack
+### <a name="Stack"></a> The stack
 
 As we previously said, the stack grows in opposite to the heap, and stores local variables, function parameters and return addresses. The stack starts at higher addresses and grows to lower addresses, let's going to see an example of an stack when a function is called.
 
@@ -803,7 +848,7 @@ Two registers are used together as stack pointers in order to divide the stack f
 
 From now on we will see the examples in 32 bits in order to reduce size of the post.
 
-### Push & Pop
+### <a name="PushAndPop"></a> Push & Pop
 
 These instructions are used to push a value into the stack, and to pop it from the top of the stack, the syntax of each instruction is the next:
 
@@ -900,7 +945,7 @@ endp
 
 This is a calling convention where registers are used together with the stack in order to pass the parameters, in 64 bits is used due to the fact that this architecture has more registers than in 32 bits. On Linux for 64 bits registers are in this order: *RDI, RSI, RDX, RCX, R8* and *R9*.
 
-### Unconditionals and Conditional Jumps
+### <a name="Jumps"></a> Unconditionals and Conditional Jumps
 
 These instructions are used to change control flow of a program. Two types of jumps exist:
 
@@ -935,7 +980,7 @@ Next flags can be set from the previous instructions:
 | JGE/JNL | Jump if greater or equal, if not lower, signed numbers | (SF ^ OV) = 0 |
 | JG/JNLE | Jump if greater, if not lower or equal, signed numbers | ((SF ^ OV)\|ZF) = 0 |
 
-## Code Constructions
+## <a name="CodeConstructions"></a> Code Constructions
 
 Now we get the point where we will see real code, and more exactly we will see some code constructions in order to recognize them once we see common constructions that we can see in source code, but in assembly. Knowing about this will help us to think about how the source code looks, so if we detect the use of global variables for example we can rename them, in the same way if we detect a loop we can jump over it to next code, and so on.
 
@@ -943,12 +988,12 @@ The files will be available in: [examples.zip](https://github.com/K0deless/k0del
 
 Once you have downloaded the samples create a project on Ghidra for all the analysis.
 
-### Different Data Types
+### <a name="DataTypes"></a> Different Data Types
 
 Let's start by different data types we can find in a program and how are accessed, we will see the disassembly on Ghidra, also we will try to reconstruct some data as structures and arrays with Ghidra. 
 
 
-#### Global Variables
+#### <a name="GlobalVars"></a> Global Variables
 
 As we previously said, we have two different types of global variables, those that are initialized and those that were not initialized, in both cases we will take it as the same type (because are accessed in the same way). Global variables are commonly accessed by its global address, we will load on Ghidra the example *global_var* and let's analyze the main function.
 
@@ -982,7 +1027,7 @@ Giving meaningful name to global addresses can help us to understand what a prog
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/global_var9.png"/>
 
-#### Local Variables
+#### <a name="LocalVars"></a> Local Variables
 
 Now we'll see the local variables that in source code are declarated inside of a function, these are stored on the stack and will be accessed by ESP/RSP or EBP/RBP. As in the previous case we will load the binary in Ghidra, as we know how to go to main function we can directly go to this. Load the binary local_var go to main function and rename it:
 
@@ -995,7 +1040,7 @@ As we can see Ghidra represent the local variables with the offset, this time it
 This is a simple program that set the value 5 to the one local variable, and the value 2 to the other. The value 5 is used as dividend and it must be set in EAX, then DIV instruction is called using the value 2 as divisor, the quotient will be in EAX and remainder in EDX, these results are stored in two local variables. 
 
 
-#### Global Structures
+#### <a name="GlobalStructures"></a> Global Structures
 
 Now we move to another data type, now we'll see the structures, this data type is highly used as it can represent "real entities" as we would do with the classes in C++. Internally the binary does not understand about structures, nor variables with different fields, and everything is memory, so maybe a structure is just represent it as access to different variables. One of the approaches to "reconstruct" a structure is to follow the structure through functions where it's passed as parameter, commonly structures are passed as pointers, and its values are filled inside. The example we will see here is pretty simple, and I will give the structure that we will create on Ghidra in order to modify a variable type.
 
@@ -1041,7 +1086,7 @@ The data has changed now and is not a bunch of unknown bytes. In the disassemble
 
 With this we've seen how to modify data types from a variable and also how to create structures.
 
-#### Local Structures
+#### <a name="LocalStructures"></a> Local Structures
 
 Let's move to next example, we will take similar code than previous in order to understand how a structure works on the stack instead of being a global variable. The structure will be the same in this case, let's load the binary *local_struct* into ghidra and analyze it.
 
@@ -1073,7 +1118,7 @@ If we rename it, and we go to the decompiler we will have the next (in order to 
 
 As we can see, better presentation is done, and we have our structure, the value *DAT_00601070* is just a global counter.
 
-#### Global Arrays
+#### <a name="GlobalArrays"></a> Global Arrays
 
 Now we move to arrays, these are similar to structures as internally are contiguous memory but this time, instead of being different data types together, are the same type, this make easier the access as there will not be different offsets, all the fields are accessed by the same offset. Commonly in low level, access to an array is made with a base pointer, and index where to access and this index multiplied by size of the field (for example an integer array would be index * 4). To know the type of the array, a clue is commonly the way the program access to each field, so the MOV instruction commonly uses in Intel Syntax different access like *dword ptr* (4 bytes), *word ptr* (2 bytes) or *byte ptr* (1 byte).
 
@@ -1111,7 +1156,7 @@ And if we go to the main function in the decompiler, we have the next:
 
 As we can see, now we don't have many different variables accessed, now we have two different arrays that are accessed index by index. This time with global variables, the program did not accessed the array as a base address + index as this would be the common way to access in a loop with an index value.
 
-#### Local Arrays
+#### <a name="LocalArrays"></a> Local Arrays
 
 Now we move to the stack representation of the arrays, again as in the previous case, we have that more than accessing an array, it looks like it access different local variables, but we can fix it modifying the stack variables in order to generate arrays. 
 
@@ -1133,7 +1178,7 @@ Disassembler now shows its representation as an array access, let's gonna do the
 
 As we've seen these are not very different from the global arrays, so once we have these concepts we will be able to recognize interesting data types, leaving just one to finish the explanation of data types.
 
-#### Pointers
+#### <a name="Pointers"></a> Pointers
 
 Now we move into the last data type we'll see, the pointers. Pointers are probably what makes C so powerfull, it allows a programmer to work directly with the memory, pointers allow also to treat some memory as an array of structures or just one structure (structure pointer). We can think pointers as *variables* that store the address of another *variable* (as the most simple description). We will see now an example which include a cast from one type of pointer to other.
 Load the example *pointers* into Ghidra, analyze it and rename *main* function.
@@ -1163,7 +1208,7 @@ Now we've finished with data types, we've seen at the end pointers, pointers as 
 
 We'll move into common code constructions like if/else code or switch with jump tables, then we will move to loops, and finally we'll see functions.
 
-### Conditional constructions (if/else)
+### <a name="IfElse"></a> Conditional constructions (if/else)
 
 This kind of code construction helps to the program to take decisions, in other case, a program would be just a sequence of instructions executing once after the other. We already saw the instructions that are involved in conditional code, these are TEST or CMP for comparing values and finally conditional jumps for branching to one part of the code or the other.
 
@@ -1213,7 +1258,7 @@ Ups, it looks like that number does not work... Or maybe we have to provide it i
 
 We could also use Ghidra in order to modify how the number is presented to modify hexadecimal by decimal base.
 
-### Multiple paths (switch)
+### <a name="Switch"></a> Multiple paths (switch)
 
 Now we'll see another conditional type of code, when you have to compare a variable with many different values, instead of writting many if/else if/else statements, we can use the switch statement, switch statement can join also case statements (the comparison values) and execute common code. Once the code of a case has executed, programmer needs to include a *break* sentence in order to jump out of switch. 
 
@@ -1297,7 +1342,7 @@ This is a table of offsets that once the program adds the index, it gets where t
 
 With this we've seen the two ways how switch statements are implemented, we will have to move to the last two topics covered in this introductory course, the loops and finally the functions.
 
-### Loops (for/do-while/while)
+### <a name="Loops"></a> Loops (for/do-while/while)
 
 When someone as programmer needs to do a task a fixed number of times, or initialize an array with sequential values, or tasks like those, the programmer can use loops. In C different loops can be implemented but internally are mostly equal (except for some specific things). Let's going to explain a little bit about each one:
 
@@ -1377,7 +1422,7 @@ Similar code than a for loop appears in previous image, but now we do not have t
 
 With this we finish with the loops, now if you see these common construction codes you'll be able to see it as a loop, we will move now to the last part, functions, we've been using functions from libraries, but now we will see program functions.
 
-### Functions
+### <a name="Functions"></a> Functions
 
 Functions make programmers live easier, it allows to share code or work with more people in an easier way, you can just call a function from a library or from another file of a project created by other programmer. We already talked about *calling conventions*, as we are in 64 bits examples, the calling convention will be *fastcall*, the parameters are passed through the registers, or in case there are a lot of parameters registers and stack are used. The return value will be in *rax*.
 
@@ -1403,12 +1448,12 @@ We can do the same with the next function (probably at this moment it will be ea
 
 The difficult part of the functions is what you can find inside, not how these are called. It's joining all the things we've seen here with online documentation, blogs, your own knowledge and skills.
 
-## Practical Example, static and dynamic analysis with Ghidra & GDB
+## <a name="PracticalExample"></a> Practical Example, static and dynamic analysis with Ghidra & GDB
 
 **TODO after the online class**
 
 
-## Last Words
+## <a name="LastWords"></a> Last Words
 
 These introductory course about Reverse Engineering came from the idea of doing something different for the students from UCLM, I was tired of all the slides that makes the class boring and are impossible to study later, I think that the best way to learn about this was going through code examples, and watching in a disassembler how it looks some common code constructions that you find in C programs.
 
