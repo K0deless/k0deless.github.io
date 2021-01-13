@@ -1299,5 +1299,82 @@ With this we've seen the two ways how switch statements are implemented, we will
 
 ### Loops (for/do-while/while)
 
+When someone as programmer needs to do a task a fixed number of times, or initialize an array with sequential values, or tasks like those, the programmer can use loops. In C different loops can be implemented but internally are mostly equal (except for some specific things). Let's going to explain a little bit about each one:
+
+**for loop**
+
+This kind of loop contains three separated codes, one is initialization of a variable, the comparison of the variable with a value, and finally the variable modification (increment, decrement, etc). Common for loop is like the next one:
+
+```c
+int i;
+
+for (i = 0; i < 10; i++)
+{
+    printf("%d ", i);
+}
+printf("\n");
+```
+
+Previous code would go from 0 to value 9, printing the number and stops once i is 10 or more.
+
+**while loop**
+
+This loop has a comparison and the code repeats until the comparison is not true, so for example if we want to have a code similar to previous one, we could do it with a *while* loop:
+
+```c
+int i = 0;
+
+while(i < 10)
+{
+    printf("%d ", i);
+    i++;
+}
+printf("\n");
+```
+
+In this case initialization and modification of the variable is not part of the loop statement.
+
+**do-while loop**
+
+This is mostly the same than previous loop, but while the *while* loop statement does not execute if the comparison is not true, do-while executes at least once even if comparison is not true.
+
+```c
+int i = 10;
+
+do
+{
+    printf("%d", i);
+}while(i < 10);
+```
+
+This code even when the comparison is not true, it executes at least once.
+
+Let's dig into the binaries in order to see the implementations at low level of the loops, we will start by the *for-loop* load the binary into Ghidra and move to main function. Change the name of the local variable *local_c* by a simple *i* as we commonly name the counters used in loops. Let's see what we have:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/loops_1.png"/>
+
+Here we have a first loop, I've renamed some addresses in order to see the parts of the for loop, at the beginning of the code we have a variable *i* initialized to *0*, and a jump directly the the comparison against 9, in case the value is equal or lower (lower than 10) it jumps to the beginning of the code inside of the loop, the code assign the i value * 10 to an offset in a global variable, so we have a global variable of size 10 in *0x00601060*, we can rename the variable as *global_array* and converting it into an array. Then once the code has finished we have that the *i* local variable is incremented by 1, in c this would be *i++* probably.
+
+Right down we have another for loop, that now we will be able to see faster the parts of the loop:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/loops_2.png"/>
+
+This time the loop is only used to print each value of the global array, printing also the index in the array. We can see the parts of the for loop here too. If we run the program we get the next output:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/loops_3.png"/>
+
+As I said other loops are implemented in similar way, but we will see an example of while loop, for that we will load the sample *while-loop* in Ghidra, move it to *main* function, rename it and we have the next:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/loops_4.png"/>
+
+The beginning of the main function is just showing a message to the user to write a number between 1 and 20, and a *scanf* call to get the number. Now we have the while loop:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/loops_5.png"/>
+
+Similar code than a for loop appears in previous image, but now we do not have the initialization of the variable nor the increment/decrement code. This time we have a jump to the comparison code (because it's a while, in a do-while it wouldn't appear), the comparison code checks the value and if it's not the same it jumps to the code inside of the loop. The code inside of the loop just says that the number is not correct and ask user to write another one. The number that the loop searches is *0x11* or *17* in decimal, let's going to run the program and check how it works.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/loops_6.png"/>
+
+With this we finish with the loops, now if you see these common construction codes you'll be able to see it as a loop, we will move now to the last part, functions, we've been using functions from libraries, but now we will see program functions.
 
 ### Functions
