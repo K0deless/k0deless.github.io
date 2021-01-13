@@ -18,7 +18,7 @@ This text will be a first approach to reverse engineering aimed to teach those w
 
 <img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/re-2.png" alt="Example of ARM disassembled code"/>
 
-## Reverse Engineering
+## <a name="Introduction"></a> Reverse Engineering
 
 The art of reverse engineering is not something from recent history nor something that was created in ancient times of the first mainframes computers, we can go to the book *Reversing: Secrets of Reverse Engineering* by Eldad Eilam in order to give a description of what is this art:
 
@@ -1378,3 +1378,38 @@ Similar code than a for loop appears in previous image, but now we do not have t
 With this we finish with the loops, now if you see these common construction codes you'll be able to see it as a loop, we will move now to the last part, functions, we've been using functions from libraries, but now we will see program functions.
 
 ### Functions
+
+Functions make programmers live easier, it allows to share code or work with more people in an easier way, you can just call a function from a library or from another file of a project created by other programmer. We already talked about *calling conventions*, as we are in 64 bits examples, the calling convention will be *fastcall*, the parameters are passed through the registers, or in case there are a lot of parameters registers and stack are used. The return value will be in *rax*.
+
+Let's going to load the binary *functions* in Ghidra, and rename the *main* function (we've been looking always at least 1 function!).
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/functions_1.png"/>
+
+As you can see at the beginning of *main*, EDI and RSI are used, so it means that main was declared with the *argc* and *argv* parameters, we can generate the function with those parameters, and rename some local variables. Now we see the call to two different functions that Ghidra could not rename it because no symbols exist for them:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/functions_2.png"/>
+
+As the image shows each function receives two parameters, one is moved to EDI and the other to ESI, with this we can see that parameters are 4 bytes as maximum. Ghidra represents the functions as *FUN_*+address of the function. Let's gonna move to one of the functions, I will rename different addresses to show the prologue and the epilogue of the functions, prologue prepares the stack in case it needs to use local variables, or access parameters through the stack, so prologue prepares a stack frame for the function. Finally epilogue release this frame, return function can access the address where to return in that moment.
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/functions_3.png"/>
+
+This is a little function so prologue and epilogue do not create nor release space for local variables, in epilogue, in case local variables exist, we would find an instruction like this: *mov rsp, rdp* moving the rdp value into rsp, then rbp is restored with *pop rbp*. This function just take the two parameters and add them storing the result in EAX, so we can rename and give the function prototype:
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/functions_4.png"/>
+
+<img src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/introduction-re/functions_5.png"/>
+
+We can do the same with the next function (probably at this moment it will be easy for you to know what it does), also there's another secret in the code that I leave for you to find it.
+
+The difficult part of the functions is what you can find inside, not how these are called. It's joining all the things we've seen here with online documentation, blogs, your own knowledge and skills.
+
+## Practical Example, static and dynamic analysis with Ghidra & GDB
+
+**TODO after the online class**
+
+
+## Last Words
+
+These introductory course about Reverse Engineering came from the idea of doing something different for the students from UCLM, I was tired of all the slides that makes the class boring and are impossible to study later, I think that the best way to learn about this was going through code examples, and watching in a disassembler how it looks some common code constructions that you find in C programs.
+
+This course is not closed yet, probably more information will be included in the future, maybe C++ with Classes/Objects/Methods/Virtual Methods and so on, malware techniques used in the wild, or exploitation techniques, this is just the beginning!.
