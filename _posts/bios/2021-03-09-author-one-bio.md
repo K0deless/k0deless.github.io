@@ -11,7 +11,7 @@ description: Short bio about author Fare9.
 
 
 <div>
-<img align="left" src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/others/fare9.jpeg" style="border: 1px solid black; float:left;display: block; margin-right: 20px; margin-bottom: 20px; padding: 1px;border-radius: 7px; width: auto;"/>
+<img align="left" src="https://raw.githubusercontent.com/K0deless/k0deless.github.io/master/assets/img/others/fare9.jpeg" style="border: 1px solid black; float:left;display: block; margin-right: 20px; margin-bottom: 20px; margin-left: 20px; padding: 1px;border-radius: 7px; width: auto;"/>
 
 I'm Eduardo Blázquez but people know me by Fare9 in security conferences and groups. I'm research assistant and Phd student at UC3M's Computer Security Lab (COSEC), my research is mainly focused on the Android ecosystem security and privacy. Before joining COSEC lab I worked for ReversingLab as junior reverse engineer and before in Panda Security as malware analyst. I got my computer engineering degree at Universidad de Alcalá de Henares (UAH), and later a Master's degree in Cybersecurity at Universidad Carlos III de Madrid (UC3M). I'm interested on low level and internals of systems and software, operating systems, programming languages, reverse engineering, malware analysis, exploiting and so on. I like coding in C, C++, python and assembly language (intel x86 for 32 and 64 bits, but I plan to learn ARM).
 </div>
