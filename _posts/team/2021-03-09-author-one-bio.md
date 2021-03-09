@@ -2,6 +2,7 @@
 layout: bio
 title: Fare9 Bio
 date: 2021-03-09
+categories: bios
 en: true
 description: Short bio about author Fare9.
 ---
