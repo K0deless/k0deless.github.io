@@ -114,11 +114,19 @@ No... Not yet... Soon =)
 {% for post in site.categories.publications %}
 
 {% if post %}
-<li>
+<ul>
+<div>
+<h5>
 <a href="{{ post.link }}" title="{{ post.title }}">{{ post.title }}</a> :: {{ post.description }}.
-Authors: {{post.authors}}.
-Conference: {{post.conference}}
-</li>
+</h5>
+<h6>
+{{post.authors}}.
+</h6>
+<p>
+{{post.conference}}
+</p>
+</div>
+</ul>
 {% endif %}
 
 {% endfor %}
