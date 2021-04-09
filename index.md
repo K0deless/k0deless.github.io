@@ -103,3 +103,23 @@ No... Not yet... Soon =)
 
 {% endfor %}
 </ul>   
+
+# $ cat publications.txt
+{:id="publications"}
+
+<ul>
+{% if site.categories.publications == null %}
+No... Not yet... Soon =)
+{% endif %}
+{% for post in site.categories.publications %}
+
+{% if post %}
+<li>
+<a href="{{ post.link }}" title="{{ post.title }}">{{ post.title }}</a> :: {{ post.description }}.
+Authors: {{post.authors}}.
+Conference: {{post.conference}}
+</li>
+{% endif %}
+
+{% endfor %}
+</ul>   
